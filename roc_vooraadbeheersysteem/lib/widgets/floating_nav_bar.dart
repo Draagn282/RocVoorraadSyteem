@@ -2,6 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/pages/home_page.dart';
 import 'package:roc_vooraadbeheersysteem/pages/test_page.dart';
+import 'package:roc_vooraadbeheersysteem/pages/archive_page.dart';
+import 'package:roc_vooraadbeheersysteem/pages/item_page.dart';
+import 'package:roc_vooraadbeheersysteem/pages/student_page.dart';
+import 'package:roc_vooraadbeheersysteem/pages/tables_page.dart';
 
 class FloatingNavBar extends StatefulWidget {
   const FloatingNavBar({Key? key}) : super(key: key);
@@ -40,11 +44,19 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
   Widget _getPageByRouteName(String routeName) {
     switch (routeName) {
       case '/home':
-        return HomePage(); // Replace with your actual HomePage widget
+        return HomePage();
       case '/test':
-        return TestPage(); // Replace with your actual TestPage widget
+        return TestPage();
+      case '/archive':
+        return ArchivePage();
+      case '/item':
+        return ItemPage();
+      case '/student':
+        return StudentPage();
+      case '/tables':
+        return TablesPage();
       default:
-        return HomePage(); // Replace with a default page if necessary
+        return HomePage();
     }
   }
 
@@ -109,6 +121,47 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                   ),
                   onTap: () {
                     _navigateTo('/test');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.archive, color: Color(0xff3f2e56)),
+                  title: const Text(
+                    'Archive',
+                    style: TextStyle(color: Color(0xff3f2e56)),
+                  ),
+                  onTap: () {
+                    _navigateTo('/archive');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.list, color: Color(0xff3f2e56)),
+                  title: const Text(
+                    'Item',
+                    style: TextStyle(color: Color(0xff3f2e56)),
+                  ),
+                  onTap: () {
+                    _navigateTo('/item');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.person, color: Color(0xff3f2e56)),
+                  title: const Text(
+                    'Students',
+                    style: TextStyle(color: Color(0xff3f2e56)),
+                  ),
+                  onTap: () {
+                    _navigateTo('/student');
+                  },
+                ),
+                ListTile(
+                  leading:
+                      const Icon(Icons.table_chart, color: Color(0xff3f2e56)),
+                  title: const Text(
+                    'Table',
+                    style: TextStyle(color: Color(0xff3f2e56)),
+                  ),
+                  onTap: () {
+                    _navigateTo('/tables');
                   },
                 ),
                 const Spacer(),
