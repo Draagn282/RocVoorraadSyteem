@@ -6,18 +6,12 @@ class TestPage extends BasePage {
   const TestPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(),
-      body: buildBody(context),
-    );
-  }
-
-  @override
   AppBar buildAppBar() {
     return AppBar(
-      title: const Text('Test Page'),
-    );
+        title: const Text(
+      'Test Page',
+      style: TextStyle(color: const Color(0xff3f2e56)),
+    ));
   }
 
   @override

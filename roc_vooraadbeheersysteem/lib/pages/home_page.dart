@@ -7,34 +7,18 @@ class HomePage extends BasePage {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(),
-      body: buildBody(context),
-    );
-  }
-
-  @override
   AppBar buildAppBar() {
     return AppBar(
-      title: const Text('Home Page'),
-    );
+        title: const Text(
+      'Home Page',
+      style: TextStyle(color: const Color(0xff3f2e56)),
+    ));
   }
 
   @override
   Widget buildBody(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Welcome to Home Page'),
-          const SizedBox(height: 20),
-          CustomButton(
-            text: 'Go to Test Page',
-            routeName: '/test',
-          ),
-        ],
-      ),
+      child: const Text('This is some random text on the Home Page'),
     );
   }
 }
