@@ -8,8 +8,18 @@ import 'package:provider/provider.dart';
 import 'package:roc_vooraadbeheersysteem/pages/home_page.dart';
 import 'package:roc_vooraadbeheersysteem/pages/test_page.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  if (Platform.isWindows) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+  final dbHelper = helpers.DatabaseHelper.instance;
+  await dbHelper.initDatabase();
+  runApp(
+    MultiProvider(
+        providers: [Provider<helpers.DatabaseHelper>.value(value: dbHelper)],
+        child: MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
