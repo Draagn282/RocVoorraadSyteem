@@ -16,8 +16,11 @@ class StudentPage extends BasePage {
 
   @override
   Widget buildBody(BuildContext context) {
-    return Center(
-      child: const Text('This is some random text on the Student Page'),
+    return Padding(
+      padding: const EdgeInsets.all(16.0), // Add padding to the entire page
+      child: ListView(
+        children: []
+      )
     );
   }
 }

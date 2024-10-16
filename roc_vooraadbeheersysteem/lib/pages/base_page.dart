@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/widgets/floating_nav_bar.dart';
-
+ 
 abstract class BasePage extends StatelessWidget {
   const BasePage({Key? key}) : super(key: key);
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,7 +11,7 @@ abstract class BasePage extends StatelessWidget {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50.0),
+            padding: const EdgeInsets.only(left: 50.0),
             child: buildBody(context),
           ),
           const FloatingNavBar(),
@@ -19,12 +19,12 @@ abstract class BasePage extends StatelessWidget {
       ),
     );
   }
-
+ 
   AppBar buildAppBar() {
     return AppBar(
       title: const Text('Base Page'),
     );
   }
-
+ 
   Widget buildBody(BuildContext context);
 }

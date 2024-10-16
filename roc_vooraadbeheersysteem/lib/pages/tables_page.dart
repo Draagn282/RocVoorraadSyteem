@@ -131,6 +131,7 @@ class _ItemsTableState extends State<ItemsTable> {
                 DataColumn(label: Text('Rented for')),
                 DataColumn(label: Text('Notes')),
                 DataColumn(label: Text('IMG')),
+                DataColumn(label: Text('Actions')), // New Actions column
               ],
               rows: _filteredItems.map((item) {
                 return DataRow(
@@ -144,6 +145,22 @@ class _ItemsTableState extends State<ItemsTable> {
                     DataCell(Text(item['rentedFor'] ?? '')),
                     DataCell(Text(item['notes'] ?? '')),
                     DataCell(Text(item['img'] ?? '')),
+                    DataCell(Row( // Action buttons
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            // Handle edit action
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            // Handle delete action
+                          },
+                        ),
+                      ],
+                    )),
                   ],
                 );
               }).toList(),
@@ -161,7 +178,6 @@ class CategoriesTable extends StatefulWidget {
   @override
   _CategoriesTableState createState() => _CategoriesTableState();
 }
-
 class _CategoriesTableState extends State<CategoriesTable> {
   final _searchController = TextEditingController();
   List<Map<String, dynamic>> _categories = [
@@ -220,12 +236,29 @@ class _CategoriesTableState extends State<CategoriesTable> {
               columns: const <DataColumn>[
                 DataColumn(label: Text('ID')),
                 DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Actions')), // New Actions column
               ],
               rows: _filteredCategories.map((category) {
                 return DataRow(
                   cells: <DataCell>[
                     DataCell(Text(category['id'].toString())),
                     DataCell(Text(category['name'] ?? '')),
+                    DataCell(Row( // Action buttons
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            // Handle edit action
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            // Handle delete action
+                          },
+                        ),
+                      ],
+                    )),
                   ],
                 );
               }).toList(),
