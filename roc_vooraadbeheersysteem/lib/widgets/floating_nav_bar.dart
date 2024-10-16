@@ -157,7 +157,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                   leading:
                       const Icon(Icons.table_chart, color: Color(0xff3f2e56)),
                   title: const Text(
-                    'Table',
+                    'Tables',
                     style: TextStyle(color: Color(0xff3f2e56)),
                   ),
                   onTap: () {
