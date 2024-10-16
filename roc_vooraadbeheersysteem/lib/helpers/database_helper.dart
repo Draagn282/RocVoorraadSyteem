@@ -33,16 +33,22 @@ class DatabaseHelper {
   )
 ''');
     await db.execute('''
+CREATE TABLE categorie (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT
+  )
+''');
+    await db.execute('''
 CREATE TABLE item (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   statusID INT,
-  itemGroupID INT,
+  categorieID INT,
   name TEXT,
   availablity BOOL,
   notes TEXT,
   image TEXT,
   FOREIGN KEY (statusID) REFERENCES status (id),
-  FOREIGN KEY (itemGroupID) REFERENCES itemGroup (id)
+  FOREIGN KEY (categorieID) REFERENCES categorie (id)
   )
 ''');
 
@@ -81,5 +87,15 @@ CREATE TABLE item (
     FOREIGN KEY (userID) REFERENCES user (id)
   )
 ''');
+  }
+
+  Future<Object?> getUser(int id) async {
+    final db = await database;
+    final user = await db.query('User', where: 'id = ?', whereArgs: [id]);
+
+    if (user.isEmpty) {
+      return null;
+    }
+    return user.first['name'];
   }
 }
