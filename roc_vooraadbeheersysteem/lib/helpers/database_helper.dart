@@ -70,7 +70,7 @@ CREATE TABLE item (
     cardID TEXT,
     class TEXT,
     cohort TEXT,
-    FOREIGN KEY (userID) REFERENCES userType (id)
+    FOREIGN KEY (userTypeID) REFERENCES userType (id)
   )
 ''');
     await db.execute('''

@@ -1,4 +1,3 @@
-// lib/pages/base_page.dart
 import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/widgets/floating_nav_bar.dart';
 
@@ -11,7 +10,10 @@ abstract class BasePage extends StatelessWidget {
       appBar: buildAppBar(),
       body: Stack(
         children: [
-          buildBody(context),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50.0),
+            child: buildBody(context),
+          ),
           const FloatingNavBar(),
         ],
       ),
