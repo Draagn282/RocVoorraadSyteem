@@ -16,7 +16,7 @@ class DatabaseHelper {
   }
 
   Future<Database> initDatabase() async {
-    String path = join(await getDatabasesPath(), 'sessions.db');
+    String path = join(await getDatabasesPath(), 'inventory.db');
     print("Database path: $path");
     return await openDatabase(
       path,
@@ -27,124 +27,59 @@ class DatabaseHelper {
 
   Future _createDB(Database db, int version) async {
     await db.execute('''
-CREATE TABLE sessions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  sessionName TEXT,
-  totalTime INTEGER,
-  createdAt INTEGER
-)
+  CREATE TABLE status (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT
+  )
 ''');
-
     await db.execute('''
-CREATE TABLE programs (
+CREATE TABLE item (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  sessionId INTEGER,
+  statusID INT,
+  itemGroupID INT,
   name TEXT,
-  duration INTEGER,
-  FOREIGN KEY (sessionId) REFERENCES sessions (id)
-)
+  availablity BOOL,
+  notes TEXT,
+  image TEXT,
+  FOREIGN KEY (statusID) REFERENCES status (id),
+  FOREIGN KEY (itemGroupID) REFERENCES itemGroup (id)
+  )
 ''');
 
     await db.execute('''
-CREATE TABLE program_executions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  programId INTEGER,
-  value INTEGER,
-  timestamp INTEGER,
-  FOREIGN KEY (programId) REFERENCES programs (id)
-)
+  CREATE TABLE orderItem (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    statusID INT,
+    itemGroupID INT,
+    FOREIGN KEY (statusID) REFERENCES status (id),
+    FOREIGN KEY (itemGroupID) REFERENCES itemGroup (id)
+  )
 ''');
-  }
-
-  Future<int> insertSession(Map<String, dynamic> session) async {
-    final db = await database;
-    return await db.insert('sessions', session);
-  }
-
-  Future<int> insertProgram(Map<String, dynamic> program) async {
-    final db = await database;
-    return await db.insert('programs', program);
-  }
-
-  Future<int> insertProgramExecution(Map<String, dynamic> execution) async {
-    final db = await database;
-    return await db.insert('program_executions', execution);
-  }
-
-  Future<List<Map<String, dynamic>>> getSessionData(int sessionId) async {
-    print("Starting getSessionData for sessionId: $sessionId");
-    try {
-      final db = await database;
-      final session =
-          await db.query('sessions', where: 'id = ?', whereArgs: [sessionId]);
-      print("Session query result: $session");
-
-      if (session.isEmpty) {
-        print("No session found for id: $sessionId");
-        return [];
-      }
-
-      final programs = await db
-          .query('programs', where: 'sessionId = ?', whereArgs: [sessionId]);
-      print("Programs query result: $programs");
-
-      final executions = await Future.wait(programs.map((program) async {
-        return await db.query('program_executions',
-            where: 'programId = ?', whereArgs: [program['id']]);
-      }));
-      print("Executions query result: $executions");
-
-      final result = [
-        {
-          'session': session.first,
-          'programs': programs.asMap().map((index, program) => MapEntry(index, {
-                ...program,
-                'executions': executions[index],
-              })),
-        }
-      ];
-      print("Final result: $result");
-      return result;
-    } catch (e) {
-      print("Error in getSessionData: $e");
-      print("Error stack trace: ${StackTrace.current}");
-      rethrow;
-    }
-  }
-
-  Future<void> deleteSession(int sessionId) async {
-    final db = await database;
-    await db.transaction((txn) async {
-      // Delete program executions
-      await txn.delete('program_executions',
-          where: 'programId IN (SELECT id FROM programs WHERE sessionId = ?)',
-          whereArgs: [sessionId]);
-
-      // Delete programs
-      await txn
-          .delete('programs', where: 'sessionId = ?', whereArgs: [sessionId]);
-
-      // Delete session
-      await txn.delete('sessions', where: 'id = ?', whereArgs: [sessionId]);
-    });
-  }
-
-  Future<List<Map<String, dynamic>>> getSessions() async {
-    final db = await database;
-    return await db.query('sessions', orderBy: 'createdAt DESC');
-  }
-
-  Future<List<Map<String, dynamic>>> getSessionPrograms(int sessionId) async {
-    final db = await database;
-    return await db
-        .query('programs', where: 'sessionId = ?', whereArgs: [sessionId]);
-  }
-
-  Future<List<Map<String, dynamic>>> getProgramExecutions(int programId) async {
-    final db = await database;
-    return await db.query('program_executions',
-        where: 'programId = ?',
-        whereArgs: [programId],
-        orderBy: 'timestamp ASC');
+    await db.execute('''
+  CREATE TABLE userType (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type TEXT
+  )
+''');
+    await db.execute('''
+  CREATE TABLE user (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userTypeID INT,
+    name TEXT,
+    studentID TEXT,
+    cardID TEXT,
+    class TEXT,
+    cohort TEXT,
+    FOREIGN KEY (userID) REFERENCES userType (id)
+  )
+''');
+    await db.execute('''
+  CREATE TABLE orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    userID INT,
+    date TEXT,
+    FOREIGN KEY (userID) REFERENCES user (id)
+  )
+''');
   }
 }
