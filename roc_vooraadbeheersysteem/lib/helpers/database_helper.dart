@@ -92,7 +92,7 @@ CREATE TABLE item (
   Future<Object?> getUser(int id) async {
     final db = await database;
     final user = await db.query('User', where: 'id = ?', whereArgs: [id]);
-
+  // maker sql query a var
     if (user.isEmpty) {
       return null;
     }
