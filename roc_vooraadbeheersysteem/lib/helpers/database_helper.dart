@@ -33,16 +33,22 @@ class DatabaseHelper {
   )
 ''');
     await db.execute('''
+CREATE TABLE categorie (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT
+  )
+''');
+    await db.execute('''
 CREATE TABLE item (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   statusID INT,
-  itemGroupID INT,
+  categorieID INT,
   name TEXT,
   availablity BOOL,
   notes TEXT,
   image TEXT,
   FOREIGN KEY (statusID) REFERENCES status (id),
-  FOREIGN KEY (itemGroupID) REFERENCES itemGroup (id)
+  FOREIGN KEY (categorieID) REFERENCES categorie (id)
   )
 ''');
 
@@ -81,5 +87,40 @@ CREATE TABLE item (
     FOREIGN KEY (userID) REFERENCES user (id)
   )
 ''');
+  }
+
+  Future<List<Map<String, dynamic>>?> getData({
+    required String tableName,
+    required String whereClause,
+    required List<dynamic> whereArgs,
+    List<String>? columns,
+  }) async {
+    final db = await database;
+
+    // Execute the query with dynamic parameters
+    final result = await db.query(
+      tableName,
+      columns: columns,
+      where: whereClause,
+      whereArgs: whereArgs,
+      //('User', where: 'id = ?', whereArgs: [id])
+    );
+
+    if (result.isEmpty) {
+      return null; // Return null if no results found
+    }
+
+    return result; // Return the full list of rows as a list of maps
+    // example for using getData
+    // final users = await getData(
+    //   tableName: 'User',
+    //   whereClause: 'age > ?',
+    //   whereArgs: [18],
+    // );
+    // if (users != null) {
+    //   for (var user in users) {
+    //     print(user); // Output each user map
+    //   }
+    // }
   }
 }
