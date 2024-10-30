@@ -89,13 +89,38 @@ CREATE TABLE item (
 ''');
   }
 
-  Future<Object?> getUser(int id) async {
+  Future<List<Map<String, dynamic>>?> getData({
+    required String tableName,
+    required String whereClause,
+    required List<dynamic> whereArgs,
+    List<String>? columns,
+  }) async {
     final db = await database;
-    final user = await db.query('User', where: 'id = ?', whereArgs: [id]);
 
-    if (user.isEmpty) {
-      return null;
+    // Execute the query with dynamic parameters
+    final result = await db.query(
+      tableName,
+      columns: columns,
+      where: whereClause,
+      whereArgs: whereArgs,
+      //('User', where: 'id = ?', whereArgs: [id])
+    );
+
+    if (result.isEmpty) {
+      return null; // Return null if no results found
     }
-    return user.first['name'];
+
+    return result; // Return the full list of rows as a list of maps
+    // example for using getData
+    // final users = await getData(
+    //   tableName: 'User',
+    //   whereClause: 'age > ?',
+    //   whereArgs: [18],
+    // );
+    // if (users != null) {
+    //   for (var user in users) {
+    //     print(user); // Output each user map
+    //   }
+    // }
   }
 }
