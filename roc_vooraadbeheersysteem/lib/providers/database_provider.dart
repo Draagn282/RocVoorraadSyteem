@@ -1,3 +1,4 @@
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -11,7 +12,6 @@ class DatabaseHelper {
     return _database!;
   }
 
-
   Future<void> addUser(String name, String email) async {
     final db = await database; // Get the database instance
     await db.insert(
@@ -20,7 +20,6 @@ class DatabaseHelper {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
-  
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''

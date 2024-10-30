@@ -5,19 +5,19 @@ import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
 class ItemPage extends BasePage {
   const ItemPage({Key? key}) : super(key: key);
 
-  Future<Item?> fetchItemById(int id) async {
-    final data = await DatabaseHelper.instance.getData(
-      tableName: 'item',
-      whereClause: 'id = ?',
-      whereArgs: [id],
-    );
+  // Future<Item?> fetchItemById(int id) async {
+  //   final data = await DatabaseHelper.instance.getData(
+  //     tableName: 'item',
+  //     whereClause: 'id = ?',
+  //     whereArgs: [id],
+  //   );
 
-    if (data != null && data.isNotEmpty) {
-      // Assuming you have an Item.fromMap constructor
-      return Item.fromMap(data.first);
-    }
-    return null;
-  }
+  //   if (data != null && data.isNotEmpty) {
+  //     // Assuming you have an Item.fromMap constructor
+  //     return Item.fromMap(data.first);
+  //   }
+  //   return null;
+  // }
 
   @override
   AppBar buildAppBar() {
@@ -30,8 +30,6 @@ class ItemPage extends BasePage {
 
   @override
   Widget buildBody(BuildContext context) {
-    return Center(
-      child: const Text('This is where the table wil be'),
     return SingleChildScrollView(
       child: Center(
         child: Align(
