@@ -6,6 +6,7 @@ import 'package:roc_vooraadbeheersysteem/pages/archive_page.dart';
 import 'package:roc_vooraadbeheersysteem/pages/item_page.dart';
 import 'package:roc_vooraadbeheersysteem/pages/student_page.dart';
 import 'package:roc_vooraadbeheersysteem/pages/tables_page.dart';
+import 'package:roc_vooraadbeheersysteem/pages/borrow_page.dart';
 
 class FloatingNavBar extends StatefulWidget {
   const FloatingNavBar({Key? key}) : super(key: key);
@@ -55,6 +56,8 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
         return StudentPage();
       case '/tables':
         return TablesPage();
+      case '/borrow':
+        return BorrowPage();
       default:
         return HomePage();
     }
@@ -162,6 +165,17 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                   ),
                   onTap: () {
                     _navigateTo('/tables');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.add_shopping_cart,
+                      color: Color(0xff3f2e56)),
+                  title: const Text(
+                    'Borrow',
+                    style: TextStyle(color: Color(0xff3f2e56)),
+                  ),
+                  onTap: () {
+                    _navigateTo('/borrow');
                   },
                 ),
                 const Spacer(),
