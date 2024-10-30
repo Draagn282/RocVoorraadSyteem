@@ -11,7 +11,7 @@ abstract class BasePage extends StatelessWidget {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50.0),
+            padding: const EdgeInsets.only(left: 50.0),
             child: buildBody(context),
           ),
           const FloatingNavBar(),
