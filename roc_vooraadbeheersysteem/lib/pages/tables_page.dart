@@ -36,9 +36,7 @@ class TablesPage extends BasePage {
           const CategoriesTable(), // Add CategoriesTable widget
         ],
       ),
-    );
-  }
-}
+i
 
 class ItemsTable extends StatefulWidget {
   const ItemsTable({Key? key}) : super(key: key);

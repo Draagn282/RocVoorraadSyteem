@@ -22,15 +22,16 @@ class ItemPage extends BasePage {
   @override
   AppBar buildAppBar() {
     return AppBar(
-      title: const Text(
-        'Item Page',
-        style: TextStyle(color: Color(0xff3f2e56)),
-      ),
-    );
+        title: const Text(
+      'Item Page',
+      style: TextStyle(color: const Color(0xff3f2e56)),
+    ));
   }
 
   @override
   Widget buildBody(BuildContext context) {
+    return Center(
+      child: const Text('This is where the table wil be'),
     return SingleChildScrollView(
       child: Center(
         child: Align(
