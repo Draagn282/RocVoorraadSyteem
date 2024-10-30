@@ -10,18 +10,9 @@ class DatabaseHelper {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDatabase();
     return _database!;
   }
 
-  Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'trng.db');
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
-  }
 
   Future<void> addUser(String name, String email) async {
     final db = await database; // Get the database instance
@@ -31,13 +22,7 @@ class DatabaseHelper {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
-
-  Stream<List<Map<String, dynamic>>> get usersStream async* {
-    final db = await database;
-    yield* Stream.periodic(Duration(seconds: 1), (_) async {
-      return await db.query('users');
-    }).asyncMap((event) async => await event);
-  }
+  
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
