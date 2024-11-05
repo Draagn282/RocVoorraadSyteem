@@ -1,3 +1,5 @@
+import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
+
 class Item {
   final int id;
   final int statusID; // Foreign key to the status table
@@ -17,7 +19,6 @@ class Item {
     required this.image,
   });
 
-  // Named constructor to create an Item from a Map
   factory Item.fromMap(Map<String, dynamic> map) {
     return Item(
       id: map['id'] as int,
@@ -31,7 +32,6 @@ class Item {
     );
   }
 
-  // Method to convert an Item to a Map (for database insertions or updates)
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -42,5 +42,35 @@ class Item {
       'notes': notes,
       'image': image,
     };
+  }
+
+  static Future<Item?> getItem(int id) async {
+    final data = await DatabaseHelper.instance.getData(
+      tableName: 'item',
+      whereClause: 'id = ' + id.toString(),
+      whereArgs: [id],
+    );
+
+    if (data != null && data.isNotEmpty) {
+      return Item.fromMap(data.first);
+    }
+    return null;
+  }
+
+  Future<void> save() async {
+    // await DatabaseHelper.instance.updateData(
+    //   tableName: 'items',
+    //   values: this.toMap(),
+    //   whereClause: 'id = ?',
+    //   whereArgs: [this.id],
+    // );
+  }
+
+  Future<void> delete() async {
+    //   await DatabaseHelper.instance.deleteData(
+    //     tableName: 'items',
+    //     whereClause: 'id = ?',
+    //     whereArgs: [this.id],
+    //   );
   }
 }

@@ -50,7 +50,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
       case '/archive':
         return ArchivePage();
       case '/item':
-        return ItemPage();
+        return ItemPage(itemId: 1);
       case '/student':
         return StudentPage();
       case '/tables':
