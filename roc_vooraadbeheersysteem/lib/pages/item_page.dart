@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
 import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
+import 'package:roc_vooraadbeheersysteem/widgets/floating_nav_bar.dart';
 
 class ItemPage extends StatefulWidget {
   final int itemId;
@@ -17,6 +18,7 @@ class _ItemPageState extends State<ItemPage> {
   @override
   void initState() {
     super.initState();
+
     itemFuture = Item.getItem(widget.itemId);
   }
 
@@ -164,6 +166,12 @@ class _ItemPageState extends State<ItemPage> {
           );
         },
       ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(
+            top: 56.0), // Adjust the bottom padding to your needs
+        child: const FloatingNavBar(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 

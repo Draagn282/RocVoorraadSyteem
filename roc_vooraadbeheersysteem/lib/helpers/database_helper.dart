@@ -103,7 +103,7 @@ CREATE TABLE item (
       columns: columns,
       where: whereClause,
       whereArgs: whereArgs,
-      //('User', where: 'id = ?', whereArgs: [id])
+      // ('User', where: 'id = ?', whereArgs: [id])
     );
 
     if (result.isEmpty) {
