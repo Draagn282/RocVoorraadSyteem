@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
 import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
 import 'package:roc_vooraadbeheersysteem/widgets/floating_nav_bar.dart';
+import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
 
 class ItemPage extends StatefulWidget {
   final int itemId;
@@ -28,6 +29,20 @@ class _ItemPageState extends State<ItemPage> {
     });
   }
 
+  Future<Item?> fetchItemById(int id) async {
+    final data = await DatabaseHelper.instance.getData(
+      tableName: 'item',
+      whereClause: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (data != null && data.isNotEmpty) {
+      // Assuming you have an Item.fromMap constructor
+      return Item.fromMap(data.first);
+    }
+    return null;
+  }
+
   @override
   AppBar buildAppBar() {
     return AppBar(
@@ -46,7 +61,8 @@ class _ItemPageState extends State<ItemPage> {
         future: itemFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: Text('Error: ${snapshot.error}'));
+            // return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data == null) {
