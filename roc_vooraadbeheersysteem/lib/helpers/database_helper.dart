@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -33,16 +34,22 @@ class DatabaseHelper {
   )
 ''');
     await db.execute('''
+CREATE TABLE categorie (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT
+  )
+''');
+    await db.execute('''
 CREATE TABLE item (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   statusID INT,
-  itemGroupID INT,
+  categorieID INT,
   name TEXT,
   availablity BOOL,
   notes TEXT,
   image TEXT,
   FOREIGN KEY (statusID) REFERENCES status (id),
-  FOREIGN KEY (itemGroupID) REFERENCES itemGroup (id)
+  FOREIGN KEY (categorieID) REFERENCES categorie (id)
   )
 ''');
 
@@ -70,7 +77,7 @@ CREATE TABLE item (
     cardID TEXT,
     class TEXT,
     cohort TEXT,
-    FOREIGN KEY (userID) REFERENCES userType (id)
+    FOREIGN KEY (userTypeID) REFERENCES userType (id)
   )
 ''');
     await db.execute('''
@@ -82,4 +89,50 @@ CREATE TABLE item (
   )
 ''');
   }
+
+  Future<List<Map<String, dynamic>>?> getData({
+    required String tableName,
+    required String whereClause,
+    required List<dynamic> whereArgs,
+    List<String>? columns,
+  }) async {
+    final db = await database;
+
+    // Execute the query with dynamic parameters
+    final result = await db.query(
+      tableName,
+      columns: columns,
+      where: whereClause,
+      whereArgs: whereArgs,
+      //('User', where: 'id = ?', whereArgs: [id])
+    );
+
+    if (result.isEmpty) {
+      return null; // Return null if no results found
+    }
+
+    return result; // Return the full list of rows as a list of maps
+    // example for using getData
+    // final users = await getData(
+    //   tableName: 'User',
+    //   whereClause: 'age > ?',
+    //   whereArgs: [18],
+    // );
+    // if (users != null) {
+    //   for (var user in users) {
+    //     print(user); // Output each user map
+    //   }
+    // }
+  }
+  // A method that retrieves all the notes from the Notes table.
+  // Future<List<Item>> getAll() async {
+  //   // Get a reference to the database.
+  //   final db = await database;
+
+  //   // Query the table for all The Notes. {SELECT * FROM Notes ORDER BY Id ASC}
+  //   final result = await db.query(tableNotes, orderBy: '$colId ASC');
+
+  //   // Convert the List<Map<String, dynamic> into a List<Note>.
+  //   return result.map((json) => Item.fromJson(json)).toList();
+  // }
 }
