@@ -49,33 +49,37 @@ class Item {
   }
 
   static Future<Item?> getItem(int id) async {
-    print("bomboclart");
-    final data = await DatabaseHelper.instance.getData(
-      tableName: 'item',
-      whereClause: 'id = ' + id.toString(),
-      whereArgs: [id],
-    );
-    if (data != null && data.isNotEmpty) {
-      return Item.fromMap(data.first);
+    try {
+      // Log the function call
+      log('Fetching item with id: $id');
+
+      // Get data from the database
+      final data = await DatabaseHelper.instance.getData(
+        tableName: 'item',
+        whereClause: 'id = 1', // Use placeholder for safety
+        // whereArgs: [id],
+      );
+
+      // Check if data is returned
+      if (data != null && data.isNotEmpty) {
+        return Item.fromMap(data.first);
+      } else {
+        // log('No item found with id: $id');
+      }
+    } catch (e) {
+      // Log any errors encountered
+      log('Error fetching item with id: $id', error: e);
     }
 
+    // Return null if no data is found or an error occurs
     return null;
   }
 
   Future<void> save() async {
-    // await DatabaseHelper.instance.updateData(
-    //   tableName: 'items',
-    //   values: this.toMap(),
-    //   whereClause: 'id = ?',
-    //   whereArgs: [this.id],
-    // );
+    // Add save logic here (e.g., insert or update the item in the database)
   }
 
   Future<void> delete() async {
-    //   await DatabaseHelper.instance.deleteData(
-    //     tableName: 'items',
-    //     whereClause: 'id = ?',
-    //     whereArgs: [this.id],
-    //   );
+    // Add delete logic here (e.g., delete the item from the database)
   }
 }

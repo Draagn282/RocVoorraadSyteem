@@ -33,7 +33,7 @@ class _ItemPageState extends State<ItemPage> {
     final data = await DatabaseHelper.instance.getData(
       tableName: 'item',
       whereClause: 'id = ?',
-      whereArgs: [id],
+      // whereArgs: [id],
     );
 
     if (data != null && data.isNotEmpty) {
@@ -86,15 +86,15 @@ class _ItemPageState extends State<ItemPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Center(
-                          child: Image.network(
-                            item.image.isNotEmpty
-                                ? item.image
-                                : 'https://fakeimg.pl/600x400/',
-                            height: 400,
-                            width: 600,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                            // child: Image.network(
+                            //   item.image.isNotEmpty
+                            //       ? item.image
+                            //       : 'https://fakeimg.pl/600x400/',
+                            //   height: 400,
+                            //   width: 600,
+                            //   fit: BoxFit.cover,
+                            // ),
+                            ),
                         const SizedBox(height: 16),
                         const Text(
                           'Item Details',
