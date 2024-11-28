@@ -1,14 +1,26 @@
+import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
 
   DatabaseHelper._init();
+
+  // Future<Database> get database async {
+  //   if (_database != null) return _database!;
+  //   _database = await initDatabase();
+  //   return _database!;
+  // }
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -93,36 +105,20 @@ CREATE TABLE item (
   Future<List<Map<String, dynamic>>?> getData({
     required String tableName,
     required String whereClause,
-    required List<dynamic> whereArgs,
+    // required List<dynamic> whereArgs,
     List<String>? columns,
   }) async {
+    print("vind" + tableName + "whereclause" + whereClause);
     final db = await database;
-
+    print(db.query);
     // Execute the query with dynamic parameters
-    final result = await db.query(
-      tableName,
-      columns: columns,
-      where: whereClause,
-      whereArgs: whereArgs,
-      //('User', where: 'id = ?', whereArgs: [id])
-    );
-
+    final result = await db.query(tableName + " WHERE " + whereClause + ";");
+    print(result);
     if (result.isEmpty) {
-      return null; // Return null if no results found
+      return null;
     }
 
-    return result; // Return the full list of rows as a list of maps
-    // example for using getData
-    // final users = await getData(
-    //   tableName: 'User',
-    //   whereClause: 'age > ?',
-    //   whereArgs: [18],
-    // );
-    // if (users != null) {
-    //   for (var user in users) {
-    //     print(user); // Output each user map
-    //   }
-    // }
+    return result;
   }
   // A method that retrieves all the notes from the Notes table.
   // Future<List<Item>> getAll() async {
