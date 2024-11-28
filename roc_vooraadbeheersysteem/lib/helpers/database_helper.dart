@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -123,4 +124,15 @@ CREATE TABLE item (
     //   }
     // }
   }
+  // A method that retrieves all the notes from the Notes table.
+  // Future<List<Item>> getAll() async {
+  //   // Get a reference to the database.
+  //   final db = await database;
+
+  //   // Query the table for all The Notes. {SELECT * FROM Notes ORDER BY Id ASC}
+  //   final result = await db.query(tableNotes, orderBy: '$colId ASC');
+
+  //   // Convert the List<Map<String, dynamic> into a List<Note>.
+  //   return result.map((json) => Item.fromJson(json)).toList();
+  // }
 }

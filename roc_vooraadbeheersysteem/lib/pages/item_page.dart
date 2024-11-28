@@ -5,20 +5,6 @@ import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
 class ItemPage extends BasePage {
   const ItemPage({Key? key}) : super(key: key);
 
-  // Future<Item?> fetchItemById(int id) async {
-  //   final data = await DatabaseHelper.instance.getData(
-  //     tableName: 'item',
-  //     whereClause: 'id = ?',
-  //     whereArgs: [id],
-  //   );
-
-  //   if (data != null && data.isNotEmpty) {
-  //     // Assuming you have an Item.fromMap constructor
-  //     return Item.fromMap(data.first);
-  //   }
-  //   return null;
-  // }
-
   @override
   AppBar buildAppBar() {
     return AppBar(
