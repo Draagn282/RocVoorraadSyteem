@@ -46,11 +46,10 @@ class _ItemPageState extends State<ItemPage> {
   @override
   AppBar buildAppBar() {
     return AppBar(
-      title: const Text(
-        'Item Page',
-        style: TextStyle(color: Color(0xff3f2e56)),
-      ),
-    );
+        title: const Text(
+      'Item Page',
+      style: TextStyle(color: const Color(0xff3f2e56)),
+    ));
   }
 
   @override

@@ -22,7 +22,7 @@ class Item {
   });
 
   // Named constructor to create an Item from a Map
-  factory Item.fromMap(Map<String, dynamic> map) {
+  factory Item.fromJson(Map<String, dynamic> map) {
     return Item(
       id: map['id'] as int,
       statusID: map['statusID'] as int,
@@ -36,7 +36,7 @@ class Item {
   }
 
   // Method to convert an Item to a Map (for database insertions or updates)
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'statusID': statusID,

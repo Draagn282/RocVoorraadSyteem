@@ -20,20 +20,20 @@ class TablesPage extends BasePage {
     return Padding(
       padding: const EdgeInsets.all(16.0), // Add padding to the entire page
       child: ListView(
-        children: [
-          const Text(
+        children: const [
+          Text(
             'Items Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 10),
-          const ItemsTable(), // Add ItemsTable widget
-          const SizedBox(height: 20), // Space between tables
-          const Text(
+          SizedBox(height: 10),
+          ItemsTable(), // Add ItemsTable widget
+          SizedBox(height: 20), // Space between tables
+          Text(
             'Categories Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 10),
-          const CategoriesTable(), // Add CategoriesTable widget
+          SizedBox(height: 10),
+          CategoriesTable(), // Add CategoriesTable widget
         ],
       ),
     );
@@ -57,7 +57,7 @@ class _ItemsTableState extends State<ItemsTable> {
       'group': 'Tech',
       'availability': 'Taken',
       'rentedBy': 'STUDENT NAME',
-      'rentedFor': '3 weeks remaining',
+      'rentedUntil': '12-10-25',
       'notes': 'no notes',
       'img': 'THIS IS AN IMAGE',
     },
@@ -68,7 +68,7 @@ class _ItemsTableState extends State<ItemsTable> {
       'group': 'Tech',
       'availability': 'Available',
       'rentedBy': 'Derik',
-      'rentedFor': '2 weeks remaining',
+      'rentedUntil': '12-10-25',
       'notes': 'no notes',
       'img': 'THIS IS AN IMAGE',
     },
@@ -128,7 +128,7 @@ class _ItemsTableState extends State<ItemsTable> {
                 DataColumn(label: Text('Group')),
                 DataColumn(label: Text('Availability')),
                 DataColumn(label: Text('Rented by')),
-                DataColumn(label: Text('Rented for')),
+                DataColumn(label: Text('Rented Until')),
                 DataColumn(label: Text('Notes')),
                 DataColumn(label: Text('IMG')),
                 DataColumn(label: Text('Actions')), // New Actions column
@@ -142,10 +142,11 @@ class _ItemsTableState extends State<ItemsTable> {
                     DataCell(Text(item['group'] ?? '')),
                     DataCell(Text(item['availability'] ?? '')),
                     DataCell(Text(item['rentedBy'] ?? '')),
-                    DataCell(Text(item['rentedFor'] ?? '')),
+                    DataCell(Text(item['rentedUntil'] ?? '')),
                     DataCell(Text(item['notes'] ?? '')),
                     DataCell(Text(item['img'] ?? '')),
-                    DataCell(Row( // Action buttons
+                    DataCell(Row(
+                      // Action buttons
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
@@ -244,7 +245,8 @@ class _CategoriesTableState extends State<CategoriesTable> {
                   cells: <DataCell>[
                     DataCell(Text(category['id'].toString())),
                     DataCell(Text(category['name'] ?? '')),
-                    DataCell(Row( // Action buttons
+                    DataCell(Row(
+                      // Action buttons
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
