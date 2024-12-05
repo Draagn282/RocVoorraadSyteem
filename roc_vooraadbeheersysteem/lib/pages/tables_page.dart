@@ -61,7 +61,7 @@ class _ItemsTableState extends State<ItemsTable> {
   }
 
 Future<void> _fetchItems() async {
-  final itemsData = await DatabaseHelper.instance.getAll('items');
+  final itemsData = await DatabaseHelper.instance.getAllItems();
   setState(() {
     _items = itemsData.map((item) => Item.fromMap(item)).toList();
     _filteredItems = List.from(_items); // Clone the list
@@ -115,7 +115,7 @@ Future<void> _fetchItems() async {
                     DataCell(Text(item.name ?? '')),
                     DataCell(Text(item.statusID?.toString() ?? 'N/A')),
                     DataCell(Text(item.categorieID?.toString() ?? 'N/A')),
-                    DataCell(Text(item.availability ? 'Available' : 'Unavailable')),
+                    DataCell(Text(item.availablity ? 'Available' : 'Unavailable')),
                     DataCell(Text(item.notes ?? '')),
                     DataCell(Text(item.image ?? '')),
                     DataCell(Row(
@@ -163,8 +163,9 @@ class _CategoriesTableState extends State<CategoriesTable> {
     _fetchCategories();
   }
 
+
 Future<void> _fetchCategories() async {
-  final categoriesData = await DatabaseHelper.instance.getAll("Categories");
+  final categoriesData = await DatabaseHelper.instance.getAllItems();
   setState(() {
     _categories = categoriesData.map((category) => Category.fromMap(category)).toList();
     _filteredCategories = List.from(_categories); // Clone the list
