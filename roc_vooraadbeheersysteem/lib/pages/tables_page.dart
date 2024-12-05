@@ -105,7 +105,7 @@ Future<void> _fetchItems() async {
                 DataColumn(label: Text('Group')),
                 DataColumn(label: Text('Availability')),
                 DataColumn(label: Text('Notes')),
-                DataColumn(label: Text('IMG')),
+                // DataColumn(label: Text('IMG')),
                 DataColumn(label: Text('Actions')),
               ],
               rows: _filteredItems.map((item) {
@@ -117,7 +117,7 @@ Future<void> _fetchItems() async {
                     DataCell(Text(item.categorieID?.toString() ?? 'N/A')),
                     DataCell(Text(item.availablity ? 'Available' : 'Unavailable')),
                     DataCell(Text(item.notes ?? '')),
-                    DataCell(Text(item.image ?? '')),
+                    // DataCell(Text(item.image ?? '')),
                     DataCell(Row(
                       children: [
                         IconButton(

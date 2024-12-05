@@ -27,13 +27,13 @@ class Item {
       id: map['id'] as int,
       statusID: map['statusID'] as int,
       categorieID: map['categorieID'] as int,
-      name: map['name'] as String,
-      availablity: map['availablity'] ==
-          1, // Assuming availability is stored as 0 or 1 in the database
-      notes: map['notes'] as String,
-      image: map['image'] as String,
+      name: map['name'] as String? ?? '',  // Use empty string if null
+      availablity: map['availablity'] == 1, // Convert int to bool
+      notes: map['notes'] as String? ?? '', // Use empty string if null
+      image: map['image'] as String? ?? '', // Use empty string if null
     );
   }
+
 
   // Method to convert an Item to a Map (for database insertions or updates)
   Map<String, dynamic> toMap() {
