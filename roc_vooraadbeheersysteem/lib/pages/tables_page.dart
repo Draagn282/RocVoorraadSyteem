@@ -25,6 +25,7 @@ class TablesPage extends BasePage {
             'Items Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
+          CreateDiaglog(),
           SizedBox(height: 10),
           ItemsTable(), // Add ItemsTable widget
           SizedBox(height: 20), // Space between tables
@@ -49,6 +50,14 @@ class ItemsTable extends StatefulWidget {
 
 class _ItemsTableState extends State<ItemsTable> {
   final _searchController = TextEditingController();
+  final __nameController = TextEditingController();
+  final __statusController = TextEditingController();
+  final __groupController = TextEditingController();
+  final __availabilityController = TextEditingController();
+  final __rentedbyController = TextEditingController();
+  final __renteduntilController = TextEditingController();
+  final __notesController = TextEditingController();
+  final __imgController = TextEditingController();
   List<Map<String, dynamic>> _items = [
     {
       'id': 1,
@@ -169,6 +178,54 @@ class _ItemsTableState extends State<ItemsTable> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class CreateDiaglog extends StatefulWidget {
+  const CreateDiaglog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () => showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Create new item'),
+           
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: ,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              TextField(
+                controller: ,
+                decoration: const InputDecoration(labelText: 'Notes'),
+              ),
+              SwitchListTile(
+                title: const Text('Available'),
+                value: ,
+                onChanged: (bool value) {
+                   = value;
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Create'),
+              child: const Text('Create'),
+            ),
+          ],
+        ),
+      ),
+      child: const Text('Show Dialog'),
     );
   }
 }
