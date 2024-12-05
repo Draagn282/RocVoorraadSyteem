@@ -84,34 +84,37 @@ class _ItemPageState extends State<ItemPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Center(
-                          child: Image.network(
-                            'https://fakeimg.pl/600x400/', // Large placeholder image
-                            height: 400, // Adjust height as needed
-                            width: 600, // Adjust width as needed
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                'assets/images/fallback_image.png', // Replace with your local asset
-                                height: 400,
-                                width: 600,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
-                        ),
+                        //
+                        // Center(
+                        //   child: Image.network(
+                        //     'https://fakeimg.pl/600x400/', // Large placeholder image
+                        //     height: 400, // Adjust height as needed
+                        //     width: 600, // Adjust width as needed
+                        //     fit: BoxFit.cover,
+                        //     loadingBuilder: (context, child, loadingProgress) {
+                        //       if (loadingProgress == null) return child;
+                        //       return Center(
+                        //         child: CircularProgressIndicator(
+                        //           value: loadingProgress.expectedTotalBytes !=
+                        //                   null
+                        //               ? loadingProgress.cumulativeBytesLoaded /
+                        //                   loadingProgress.expectedTotalBytes!
+                        //               : null,
+                        //         ),
+                        //       );
+                        //     },
+                        //     errorBuilder: (context, error, stackTrace) {
+                        //       return Image.asset(
+                        //         'assets/images/fallback_image.png', // Replace with your local asset
+                        //         height: 400,
+                        //         width: 600,
+                        //         fit: BoxFit.cover,
+                        //       );
+                        //     },
+                        //   ),
+                        // ),
+
+                        ///
                         const SizedBox(height: 16),
                         const Text(
                           'Item Details',
