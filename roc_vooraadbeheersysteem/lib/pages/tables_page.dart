@@ -20,21 +20,21 @@ class TablesPage extends BasePage {
     return Padding(
       padding: const EdgeInsets.all(16.0), // Add padding to the entire page
       child: ListView(
-        children: const [
-          Text(
+        children: [
+          const Text(
             'Items Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          CreateDiaglog(),
-          SizedBox(height: 10),
-          ItemsTable(), // Add ItemsTable widget
-          SizedBox(height: 20), // Space between tables
-          Text(
+          CreateDialog(),
+          const SizedBox(height: 10),
+          const ItemsTable(), // Add ItemsTable widget
+          const SizedBox(height: 20), // Space between tables
+          const Text(
             'Categories Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 10),
-          CategoriesTable(), // Add CategoriesTable widget
+          const SizedBox(height: 10),
+          const CategoriesTable(), // Add CategoriesTable widget
         ],
       ),
     );
@@ -182,9 +182,22 @@ class _ItemsTableState extends State<ItemsTable> {
   }
 }
 
-class CreateDiaglog extends StatefulWidget {
-  const CreateDiaglog({super.key});
+class CreateDialog extends StatefulWidget {
+  const CreateDialog({super.key});
 
+  @override
+  _CreateDialogState createState() => _CreateDialogState();
+}
+
+class _CreateDialogState extends State<CreateDialog> {
+  final _nameController = TextEditingController();
+  final _notesController = TextEditingController();
+  final _statusController = TextEditingController();
+  final _groupController = TextEditingController();
+  final _availabilityController = TextEditingController();
+  final _rentedbyController = TextEditingController();
+  final _renteduntilController = TextEditingController();
+  final _imgController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -192,24 +205,40 @@ class CreateDiaglog extends StatefulWidget {
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: const Text('Create new item'),
-           
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: ,
+                controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Name'),
               ),
               TextField(
-                controller: ,
+                controller: _notesController,
                 decoration: const InputDecoration(labelText: 'Notes'),
               ),
-              SwitchListTile(
-                title: const Text('Available'),
-                value: ,
-                onChanged: (bool value) {
-                   = value;
-                },
+              TextField(
+                controller: _statusController,
+                decoration: const InputDecoration(labelText: 'status'),
+              ),
+              TextField(
+                controller: _groupController,
+                decoration: const InputDecoration(labelText: 'group'),
+              ),
+              TextField(
+                controller: _availabilityController,
+                decoration: const InputDecoration(labelText: 'availability'),
+              ),
+              TextField(
+                controller: _rentedbyController,
+                decoration: const InputDecoration(labelText: 'rented by'),
+              ),
+              TextField(
+                controller: _renteduntilController,
+                decoration: const InputDecoration(labelText: 'rented until'),
+              ),
+              TextField(
+                controller: _imgController,
+                decoration: const InputDecoration(labelText: 'img'),
               ),
             ],
           ),
