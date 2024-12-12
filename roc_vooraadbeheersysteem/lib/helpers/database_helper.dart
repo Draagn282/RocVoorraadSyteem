@@ -132,6 +132,12 @@ Future<List<Map<String, dynamic>>> getAllCategories() async {
   return result; // Return the full list of results
 }
 
+Future<List<Map<String, dynamic>>> getAllStatuses() async {
+  final db = await database;
+  final result = await db.query('status');
+  return result; // Return the full list of results
+}
+
   // A method that retrieves all the notes from the Notes table.
   // Future<List<Item>> getAll() async {
   //   // Get a reference to the database.
