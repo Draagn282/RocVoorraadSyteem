@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
 import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
 import 'package:roc_vooraadbeheersysteem/widgets/floating_nav_bar.dart';
@@ -19,28 +20,14 @@ class _ItemPageState extends State<ItemPage> {
   @override
   void initState() {
     super.initState();
-
-    itemFuture = Item.getItem(widget.itemId);
+    itemFuture =
+        Item.getItem(widget.itemId); // This is where the item data is fetched.
   }
 
   Future<void> refreshItem() async {
     setState(() {
-      itemFuture = Item.getItem(widget.itemId);
+      itemFuture = Item.getItem(widget.itemId); // Refresh the item data.
     });
-  }
-
-  Future<Item?> fetchItemById(int id) async {
-    final data = await DatabaseHelper.instance.getData(
-      tableName: 'item',
-      whereClause: 'id = ?',
-      // whereArgs: [id],
-    );
-
-    if (data != null && data.isNotEmpty) {
-      // Assuming you have an Item.fromMap constructor
-      return Item.fromMap(data.first);
-    }
-    return null;
   }
 
   @override
@@ -61,7 +48,6 @@ class _ItemPageState extends State<ItemPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: Text('Error: ${snapshot.error}'));
-            // return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data == null) {
@@ -85,36 +71,33 @@ class _ItemPageState extends State<ItemPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         //
-                        // Center(
-                        //   child: Image.network(
-                        //     'https://fakeimg.pl/600x400/', // Large placeholder image
-                        //     height: 400, // Adjust height as needed
-                        //     width: 600, // Adjust width as needed
-                        //     fit: BoxFit.cover,
-                        //     loadingBuilder: (context, child, loadingProgress) {
-                        //       if (loadingProgress == null) return child;
-                        //       return Center(
-                        //         child: CircularProgressIndicator(
-                        //           value: loadingProgress.expectedTotalBytes !=
-                        //                   null
-                        //               ? loadingProgress.cumulativeBytesLoaded /
-                        //                   loadingProgress.expectedTotalBytes!
-                        //               : null,
-                        //         ),
-                        //       );
-                        //     },
-                        //     errorBuilder: (context, error, stackTrace) {
-                        //       return Image.asset(
-                        //         'assets/images/fallback_image.png', // Replace with your local asset
-                        //         height: 400,
-                        //         width: 600,
-                        //         fit: BoxFit.cover,
-                        //       );
-                        //     },
-                        //   ),
-                        // ),
+                        //
+                        Center(
+                          child: item.image.isNotEmpty
+                              ? Image.memory(
+                                  item.image, // Use the Uint8List image directly
+                                  height: 400,
+                                  width: 600,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/images/fallback_image.png', // Fallback asset image
+                                      height: 400,
+                                      width: 600,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                )
+                              : Image.asset(
+                                  'assets/images/fallback_image.png', // Fallback asset image
+                                  height: 400,
+                                  width: 600,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
 
-                        ///
+                        //
+                        //
                         const SizedBox(height: 16),
                         const Text(
                           'Item Details',

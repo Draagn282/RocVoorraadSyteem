@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'dart:developer';
 
 import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
@@ -9,7 +10,7 @@ class Item {
   final String name;
   final bool availablity; // Boolean indicating availability
   final String notes; // Additional notes about the item
-  final String image; // URL or path to the item's image
+  final Uint8List image; // Binary data for the item's image
 
   Item({
     required this.id,
@@ -23,15 +24,16 @@ class Item {
 
   // Named constructor to create an Item from a Map
   factory Item.fromMap(Map<String, dynamic> map) {
+    final image = map['image']; // Ensure this matches your DB schema
     return Item(
       id: map['id'] as int,
       statusID: map['statusID'] as int,
       categorieID: map['categorieID'] as int,
       name: map['name'] as String,
-      availablity: map['availablity'] ==
-          1, // Assuming availability is stored as 0 or 1 in the database
+      availablity: map['availablity'] == 1,
       notes: map['notes'] as String,
-      image: map['image'] as String,
+      image:
+          image is Uint8List ? image : Uint8List(0), // Default to empty if null
     );
   }
 
@@ -44,34 +46,27 @@ class Item {
       'name': name,
       'availablity': availablity ? 1 : 0, // Convert bool to int for storage
       'notes': notes,
-      'image': image,
+      'image': image, // Store binary data in the database
     };
   }
 
   static Future<Item?> getItem(int id) async {
     try {
-      // Log the function call
       log('Fetching item with id: $id');
 
-      // Get data from the database
       final data = await DatabaseHelper.instance.getData(
         tableName: 'item',
-        whereClause: 'id = 1', // Use placeholder for safety
-        // whereArgs: [id],
+        whereClause: 'id = ' + id.toString(), // Use placeholder for safety
+        // whereArgs: [id], // Bind the id parameter
       );
 
-      // Check if data is returned
       if (data != null && data.isNotEmpty) {
         return Item.fromMap(data.first);
-      } else {
-        // log('No item found with id: $id');
       }
     } catch (e) {
-      // Log any errors encountered
       log('Error fetching item with id: $id', error: e);
     }
 
-    // Return null if no data is found or an error occurs
     return null;
   }
 
