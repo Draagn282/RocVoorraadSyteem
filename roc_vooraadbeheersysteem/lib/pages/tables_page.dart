@@ -1,6 +1,9 @@
-// lib/pages/test/test_page.dart
 import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
+import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
+import 'package:roc_vooraadbeheersysteem/models/category_model.dart';
+import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
+import 'package:roc_vooraadbeheersysteem/models/Status_model.dart';
 
 class TablesPage extends BasePage {
   const TablesPage({Key? key}) : super(key: key);
@@ -18,7 +21,7 @@ class TablesPage extends BasePage {
   @override
   Widget buildBody(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0), // Add padding to the entire page
+      padding: const EdgeInsets.all(16.0),
       child: ListView(
         children: [
           const Text(
@@ -27,14 +30,21 @@ class TablesPage extends BasePage {
           ),
           CreateDialog(),
           const SizedBox(height: 10),
-          const ItemsTable(), // Add ItemsTable widget
-          const SizedBox(height: 20), // Space between tables
+          const ItemsTable(),
+          const SizedBox(height: 20),
           const Text(
             'Categories Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
-          const CategoriesTable(), // Add CategoriesTable widget
+          const CategoriesTable(),
+          SizedBox(height: 20),
+          Text(
+            'Status Table',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          StatusTable(),
         ],
       ),
     );
@@ -50,52 +60,28 @@ class ItemsTable extends StatefulWidget {
 
 class _ItemsTableState extends State<ItemsTable> {
   final _searchController = TextEditingController();
-  final __nameController = TextEditingController();
-  final __statusController = TextEditingController();
-  final __groupController = TextEditingController();
-  final __availabilityController = TextEditingController();
-  final __rentedbyController = TextEditingController();
-  final __renteduntilController = TextEditingController();
-  final __notesController = TextEditingController();
-  final __imgController = TextEditingController();
-  List<Map<String, dynamic>> _items = [
-    {
-      'id': 1,
-      'name': 'Product A',
-      'status': 'Good condition',
-      'group': 'Tech',
-      'availability': 'Taken',
-      'rentedBy': 'STUDENT NAME',
-      'rentedUntil': '12-10-25',
-      'notes': 'no notes',
-      'img': 'THIS IS AN IMAGE',
-    },
-    {
-      'id': 2,
-      'name': 'Radhan',
-      'status': 'Good condition',
-      'group': 'Tech',
-      'availability': 'Available',
-      'rentedBy': 'Derik',
-      'rentedUntil': '12-10-25',
-      'notes': 'no notes',
-      'img': 'THIS IS AN IMAGE',
-    },
-  ];
-
-  List<Map<String, dynamic>> _filteredItems = [];
+  List<Item> _items = [];
+  List<Item> _filteredItems = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredItems = _items; // Initialize with all items
+    _fetchItems(); // Fetch items during initialization
+  }
+
+  Future<void> _fetchItems() async {
+    final itemsData = await DatabaseHelper.instance.getAllItems();
+    setState(() {
+      _items = itemsData.map((item) => Item.fromMap(item)).toList();
+      _filteredItems = List.from(_items); // Clone the list
+    });
   }
 
   void _filterItems() {
     String searchText = _searchController.text.toLowerCase();
     setState(() {
       _filteredItems = _items.where((item) {
-        return item['name'].toLowerCase().contains(searchText);
+        return item.name?.toLowerCase().contains(searchText) ?? false;
       }).toList();
     });
   }
@@ -104,27 +90,17 @@ class _ItemsTableState extends State<ItemsTable> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Row(
-            children: [
-              // Search Bar for Items
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    labelText: 'Search Items by Name',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) => _filterItems(),
-                ),
-              ),
-            ],
+        TextField(
+          controller: _searchController,
+          decoration: const InputDecoration(
+            labelText: 'Search Items by Name',
+            border: OutlineInputBorder(),
           ),
+          onChanged: (value) => _filterItems(),
         ),
-        // Define a fixed height for the DataTable
+        const SizedBox(height: 16.0),
         SizedBox(
-          height: 300, // Adjust this height as needed
+          height: 300,
           child: SingleChildScrollView(
             child: DataTable(
               columnSpacing: 50,
@@ -136,26 +112,22 @@ class _ItemsTableState extends State<ItemsTable> {
                 DataColumn(label: Text('Status')),
                 DataColumn(label: Text('Group')),
                 DataColumn(label: Text('Availability')),
-                DataColumn(label: Text('Rented by')),
-                DataColumn(label: Text('Rented Until')),
                 DataColumn(label: Text('Notes')),
-                DataColumn(label: Text('IMG')),
-                DataColumn(label: Text('Actions')), // New Actions column
+                // DataColumn(label: Text('IMG')),
+                DataColumn(label: Text('Actions')),
               ],
               rows: _filteredItems.map((item) {
                 return DataRow(
                   cells: <DataCell>[
-                    DataCell(Text(item['id'].toString())),
-                    DataCell(Text(item['name'] ?? '')),
-                    DataCell(Text(item['status'] ?? '')),
-                    DataCell(Text(item['group'] ?? '')),
-                    DataCell(Text(item['availability'] ?? '')),
-                    DataCell(Text(item['rentedBy'] ?? '')),
-                    DataCell(Text(item['rentedUntil'] ?? '')),
-                    DataCell(Text(item['notes'] ?? '')),
-                    DataCell(Text(item['img'] ?? '')),
+                    DataCell(Text(item.id.toString())),
+                    DataCell(Text(item.name ?? '')),
+                    DataCell(Text(item.statusID?.toString() ?? 'N/A')),
+                    DataCell(Text(item.categorieID?.toString() ?? 'N/A')),
+                    DataCell(
+                        Text(item.availablity ? 'Available' : 'Unavailable')),
+                    DataCell(Text(item.notes ?? '')),
+                    // DataCell(Text(item.image ?? '')),
                     DataCell(Row(
-                      // Action buttons
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
@@ -268,25 +240,29 @@ class CategoriesTable extends StatefulWidget {
 
 class _CategoriesTableState extends State<CategoriesTable> {
   final _searchController = TextEditingController();
-  List<Map<String, dynamic>> _categories = [
-    {'id': 1, 'name': 'Tech'},
-    {'id': 2, 'name': 'Furniture'},
-    {'id': 3, 'name': 'Books'},
-  ];
-
-  List<Map<String, dynamic>> _filteredCategories = [];
+  List<Category> _categories = [];
+  List<Category> _filteredCategories = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredCategories = _categories; // Initialize with all categories
+    _fetchCategories();
+  }
+
+  Future<void> _fetchCategories() async {
+    final categoriesData = await DatabaseHelper.instance.getAllItems();
+    setState(() {
+      _categories =
+          categoriesData.map((category) => Category.fromMap(category)).toList();
+      _filteredCategories = List.from(_categories); // Clone the list
+    });
   }
 
   void _filterCategories() {
     String searchText = _searchController.text.toLowerCase();
     setState(() {
       _filteredCategories = _categories.where((category) {
-        return category['name'].toLowerCase().contains(searchText);
+        return category.name.toLowerCase().contains(searchText);
       }).toList();
     });
   }
@@ -295,27 +271,17 @@ class _CategoriesTableState extends State<CategoriesTable> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Row(
-            children: [
-              // Search Bar for Categories
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    labelText: 'Search Categories by Name',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) => _filterCategories(),
-                ),
-              ),
-            ],
+        TextField(
+          controller: _searchController,
+          decoration: const InputDecoration(
+            labelText: 'Search Categories by Name',
+            border: OutlineInputBorder(),
           ),
+          onChanged: (value) => _filterCategories(),
         ),
-        // Define a fixed height for the DataTable
+        const SizedBox(height: 16.0),
         SizedBox(
-          height: 300, // Adjust this height as needed
+          height: 300,
           child: SingleChildScrollView(
             child: DataTable(
               columnSpacing: 50,
@@ -324,15 +290,106 @@ class _CategoriesTableState extends State<CategoriesTable> {
               columns: const <DataColumn>[
                 DataColumn(label: Text('ID')),
                 DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Actions')), // New Actions column
+                DataColumn(label: Text('Actions')),
               ],
               rows: _filteredCategories.map((category) {
                 return DataRow(
                   cells: <DataCell>[
-                    DataCell(Text(category['id'].toString())),
-                    DataCell(Text(category['name'] ?? '')),
+                    DataCell(Text(category.id.toString())),
+                    DataCell(Text(category.name)),
                     DataCell(Row(
-                      // Action buttons
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            // Handle edit action
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            // Handle delete action
+                          },
+                        ),
+                      ],
+                    )),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class StatusTable extends StatefulWidget {
+  const StatusTable({Key? key}) : super(key: key);
+
+  @override
+  _StatusTableState createState() => _StatusTableState();
+}
+
+class _StatusTableState extends State<StatusTable> {
+  final _searchController = TextEditingController();
+  List<Status> _statuses = [];
+  List<Status> _filteredStatuses = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchStatuses();
+  }
+
+  Future<void> _fetchStatuses() async {
+    final statusData = await DatabaseHelper.instance.getAllStatuses();
+    setState(() {
+      _statuses = statusData.map((status) => Status.fromMap(status)).toList();
+      _filteredStatuses = List.from(_statuses); // Clone the list
+    });
+  }
+
+  void _filterStatuses() {
+    String searchText = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredStatuses = _statuses.where((status) {
+        return status.name.toLowerCase().contains(searchText);
+      }).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextField(
+          controller: _searchController,
+          decoration: const InputDecoration(
+            labelText: 'Search Status by Name',
+            border: OutlineInputBorder(),
+          ),
+          onChanged: (value) => _filterStatuses(),
+        ),
+        const SizedBox(height: 16.0),
+        SizedBox(
+          height: 300,
+          child: SingleChildScrollView(
+            child: DataTable(
+              columnSpacing: 50,
+              dataRowHeight: 60.0,
+              headingRowHeight: 50,
+              columns: const <DataColumn>[
+                DataColumn(label: Text('ID')),
+                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Actions')),
+              ],
+              rows: _filteredStatuses.map((status) {
+                return DataRow(
+                  cells: <DataCell>[
+                    DataCell(Text(status.id.toString())),
+                    DataCell(Text(status.name)),
+                    DataCell(Row(
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
