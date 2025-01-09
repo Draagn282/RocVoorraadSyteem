@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
 
 class Item {
-  final int id;
+  final int? id;
   final int statusID; // Foreign key to the status table
   final int categorieID; // Foreign key to the categorie table
   final String name;
@@ -12,7 +12,7 @@ class Item {
   final String image; // URL or path to the item's image
 
   Item({
-    required this.id,
+    this.id, //nullable
     required this.statusID,
     required this.categorieID,
     required this.name,
@@ -27,13 +27,12 @@ class Item {
       id: map['id'] as int,
       statusID: map['statusID'] as int,
       categorieID: map['categorieID'] as int,
-      name: map['name'] as String? ?? '',  // Use empty string if null
+      name: map['name'] as String? ?? '', // Use empty string if null
       availablity: map['availablity'] == 1, // Convert int to bool
       notes: map['notes'] as String? ?? '', // Use empty string if null
       image: map['image'] as String? ?? '', // Use empty string if null
     );
   }
-
 
   // Method to convert an Item to a Map (for database insertions or updates)
   Map<String, dynamic> toMap() {
@@ -73,6 +72,24 @@ class Item {
 
     // Return null if no data is found or an error occurs
     return null;
+  }
+
+  static Future<void> create(
+    _nameController,
+    _notesController,
+    _imgController,
+  ) async {
+    final newItem = Item(
+      name: _nameController.text, // Access `.text` from TextEditingController
+      notes: _notesController.text,
+      statusID: 1,
+      categorieID: 1,
+      availablity: true,
+      image: _imgController.text,
+    );
+    // Insert the item into the database
+    final id = await DatabaseHelper.instance.createItem(newItem);
+    log('Inserted item with id: $id');
   }
 
   Future<void> save() async {

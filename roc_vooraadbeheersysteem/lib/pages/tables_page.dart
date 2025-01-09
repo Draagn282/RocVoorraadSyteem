@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
 import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
@@ -23,21 +25,21 @@ class TablesPage extends BasePage {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ListView(
-        children: [
-          const Text(
+        children: const [
+          Text(
             'Items Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           CreateDialog(),
-          const SizedBox(height: 10),
-          const ItemsTable(),
-          const SizedBox(height: 20),
-          const Text(
+          SizedBox(height: 10),
+          ItemsTable(),
+          SizedBox(height: 20),
+          Text(
             'Categories Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 10),
-          const CategoriesTable(),
+          SizedBox(height: 10),
+          CategoriesTable(),
           SizedBox(height: 20),
           Text(
             'Status Table',
@@ -52,7 +54,7 @@ class TablesPage extends BasePage {
 }
 
 class ItemsTable extends StatefulWidget {
-  const ItemsTable({Key? key}) : super(key: key);
+  const ItemsTable({super.key});
 
   @override
   _ItemsTableState createState() => _ItemsTableState();
@@ -166,10 +168,25 @@ class _CreateDialogState extends State<CreateDialog> {
   final _notesController = TextEditingController();
   final _statusController = TextEditingController();
   final _groupController = TextEditingController();
+  final _categorieController = TextEditingController();
   final _availabilityController = TextEditingController();
-  final _rentedbyController = TextEditingController();
-  final _renteduntilController = TextEditingController();
+
   final _imgController = TextEditingController();
+
+  Item createItemFromControllers() {
+    return Item(
+      id: 0, // Assuming this is an auto-incrementing field
+      statusID: int.tryParse(_statusController.text) ??
+          0, // Parse to int or default to 0
+      categorieID: 0, // You might need to get this from another source
+      name: _nameController.text,
+      availablity: _availabilityController.text.toLowerCase() ==
+          'true', // Convert to bool (case-insensitive)
+      notes: _notesController.text,
+      image: _imgController.text,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -197,16 +214,12 @@ class _CreateDialogState extends State<CreateDialog> {
                 decoration: const InputDecoration(labelText: 'group'),
               ),
               TextField(
+                controller: _categorieController,
+                decoration: const InputDecoration(labelText: 'categorie'),
+              ),
+              TextField(
                 controller: _availabilityController,
                 decoration: const InputDecoration(labelText: 'availability'),
-              ),
-              TextField(
-                controller: _rentedbyController,
-                decoration: const InputDecoration(labelText: 'rented by'),
-              ),
-              TextField(
-                controller: _renteduntilController,
-                decoration: const InputDecoration(labelText: 'rented until'),
               ),
               TextField(
                 controller: _imgController,
@@ -216,11 +229,19 @@ class _CreateDialogState extends State<CreateDialog> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context, 'Cancel'),
+              onPressed: () => {Navigator.pop(context, 'Cancel')},
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, 'Create'),
+              onPressed: () async {
+                Item.create(
+                  _nameController,
+                  _notesController,
+                  _imgController,
+                );
+                // Close the dialog
+                Navigator.pop(context, 'Create');
+              },
               child: const Text('Create'),
             ),
           ],

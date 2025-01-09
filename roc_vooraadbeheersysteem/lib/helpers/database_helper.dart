@@ -120,23 +120,35 @@ CREATE TABLE item (
 
     return result;
   }
-Future<List<Map<String, dynamic>>> getAllItems() async {
-  final db = await database;
-  final result = await db.query('item');
-  return result; // Return the full list of results
-}
 
-Future<List<Map<String, dynamic>>> getAllCategories() async {
-  final db = await database;
-  final result = await db.query('categorie');
-  return result; // Return the full list of results
-}
+  Future<List<Map<String, dynamic>>> getAllItems() async {
+    final db = await database;
+    final result = await db.query('item');
+    return result; // Return the full list of results
+  }
 
-Future<List<Map<String, dynamic>>> getAllStatuses() async {
-  final db = await database;
-  final result = await db.query('status');
-  return result; // Return the full list of results
-}
+  Future<List<Map<String, dynamic>>> getAllCategories() async {
+    final db = await database;
+    final result = await db.query('categorie');
+    return result; // Return the full list of results
+  }
+
+  Future<List<Map<String, dynamic>>> getAllStatuses() async {
+    final db = await database;
+    final result = await db.query('status');
+    return result; // Return the full list of results
+  }
+
+  Future<int> createItem(Item item) async {
+    final db = await database;
+
+    // Use the toMap function of the Item class
+    return await db.insert(
+      'item',
+      item.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
 
   // A method that retrieves all the notes from the Notes table.
   // Future<List<Item>> getAll() async {
