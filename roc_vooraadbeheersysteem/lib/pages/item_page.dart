@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
 import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
 import 'package:roc_vooraadbeheersysteem/widgets/floating_nav_bar.dart';
@@ -19,28 +20,28 @@ class _ItemPageState extends State<ItemPage> {
   @override
   void initState() {
     super.initState();
-
-    itemFuture = Item.getItem(widget.itemId);
+    itemFuture =
+        Item.getItem(widget.itemId); // This is where the item data is fetched.
   }
 
   Future<void> refreshItem() async {
     setState(() {
-      itemFuture = Item.getItem(widget.itemId);
+      itemFuture = Item.getItem(widget.itemId); // Refresh the item data.
     });
   }
 
-  Future<Item?> fetchItemById(int id) async {
-    final data = await DatabaseHelper.instance.getData(
-      tableName: 'item',
-      whereClause: 'id = ?',
-      // whereArgs: [id],
+  Future<String> fetchCategory(int categoryId) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.query(
+      'categorie', // Replace with your actual categories table name
+      columns: ['name'], // Replace with the column that stores category names
+      where: 'id = ?',
+      whereArgs: [categoryId],
     );
-
-    if (data != null && data.isNotEmpty) {
-      // Assuming you have an Item.fromMap constructor
-      return Item.fromMap(data.first);
+    if (result.isNotEmpty) {
+      return result.first['name'] as String;
     }
-    return null;
+    return 'Unknown';
   }
 
   @override
@@ -61,7 +62,6 @@ class _ItemPageState extends State<ItemPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: Text('Error: ${snapshot.error}'));
-            // return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data == null) {
@@ -85,39 +85,36 @@ class _ItemPageState extends State<ItemPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         //
-                        // Center(
-                        //   child: Image.network(
-                        //     'https://fakeimg.pl/600x400/', // Large placeholder image
-                        //     height: 400, // Adjust height as needed
-                        //     width: 600, // Adjust width as needed
-                        //     fit: BoxFit.cover,
-                        //     loadingBuilder: (context, child, loadingProgress) {
-                        //       if (loadingProgress == null) return child;
-                        //       return Center(
-                        //         child: CircularProgressIndicator(
-                        //           value: loadingProgress.expectedTotalBytes !=
-                        //                   null
-                        //               ? loadingProgress.cumulativeBytesLoaded /
-                        //                   loadingProgress.expectedTotalBytes!
-                        //               : null,
-                        //         ),
-                        //       );
-                        //     },
-                        //     errorBuilder: (context, error, stackTrace) {
-                        //       return Image.asset(
-                        //         'assets/images/fallback_image.png', // Replace with your local asset
-                        //         height: 400,
-                        //         width: 600,
-                        //         fit: BoxFit.cover,
-                        //       );
-                        //     },
-                        //   ),
-                        // ),
+                        //
+                        Center(
+                          child: item.image.isNotEmpty
+                              ? Image.memory(
+                                  item.image, // Use the Uint8List image directly
+                                  height: 400,
+                                  width: 600,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      'assets/images/fallback_image.png', // Fallback asset image
+                                      height: 400,
+                                      width: 600,
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                )
+                              : Image.asset(
+                                  'assets/images/fallback_image.png', // Fallback asset image
+                                  height: 400,
+                                  width: 600,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
 
-                        ///
+                        //
+                        //
                         const SizedBox(height: 16),
                         const Text(
-                          'Item Details',
+                          'Item details',
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -125,7 +122,7 @@ class _ItemPageState extends State<ItemPage> {
                         Row(
                           children: [
                             const Text(
-                              'Name:',
+                              'Naam:',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),
@@ -142,7 +139,7 @@ class _ItemPageState extends State<ItemPage> {
                         Row(
                           children: [
                             const Text(
-                              'Notes:',
+                              'Opmerkingen:',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),
@@ -155,11 +152,12 @@ class _ItemPageState extends State<ItemPage> {
                             ),
                           ],
                         ),
+
                         const SizedBox(height: 8),
                         Row(
                           children: [
                             const Text(
-                              'Available:',
+                              'Beschikbaar:',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),
@@ -167,6 +165,53 @@ class _ItemPageState extends State<ItemPage> {
                             Text(
                               item.availablity ? 'Yes' : 'No',
                               style: const TextStyle(fontSize: 18),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                            height: 8), // Consistente verticale ruimte
+                        Row(
+                          children: [
+                            const Text(
+                              'Categorie:',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w500),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: FutureBuilder<String>(
+                                future: fetchCategory(item
+                                    .categorieID), // Call the fetchCategory function
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Text(
+                                      'Loading...',
+                                      style: TextStyle(
+                                          fontSize: 18), // Same styling
+                                    );
+                                  } else if (snapshot.hasError) {
+                                    return const Text(
+                                      'Error loading category',
+                                      style: TextStyle(
+                                          fontSize: 18), // Same styling
+                                    );
+                                  } else if (!snapshot.hasData ||
+                                      snapshot.data == null) {
+                                    return const Text(
+                                      'Unknown',
+                                      style: TextStyle(
+                                          fontSize: 18), // Same styling
+                                    );
+                                  }
+                                  return Text(
+                                    snapshot
+                                        .data!, // Display the fetched category name
+                                    style: const TextStyle(
+                                        fontSize: 18), // Same styling
+                                  );
+                                },
+                              ),
                             ),
                           ],
                         ),
