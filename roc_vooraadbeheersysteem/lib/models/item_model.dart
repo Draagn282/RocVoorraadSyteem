@@ -8,6 +8,7 @@ class Item {
   final int categorieID; // Foreign key to the categorie table
   final String name;
   final bool availablity; // Boolean indicating availability
+  final DateTime rented;
   final String notes; // Additional notes about the item
   final String image; // URL or path to the item's image
 
@@ -17,6 +18,7 @@ class Item {
     required this.categorieID,
     required this.name,
     required this.availablity,
+    required this.rented,
     required this.notes,
     required this.image,
   });
@@ -29,6 +31,9 @@ class Item {
       categorieID: map['categorieID'] as int,
       name: map['name'] as String? ?? '',  // Use empty string if null
       availablity: map['availablity'] == 1, // Convert int to bool
+         rented: map['rented'] != null
+        ? DateTime.parse(map['rented'] as String) // Parse if not null
+        : DateTime.now(), // Provide a default value if null
       notes: map['notes'] as String? ?? '', // Use empty string if null
       image: map['image'] as String? ?? '', // Use empty string if null
     );
@@ -43,6 +48,7 @@ class Item {
       'categorieID': categorieID,
       'name': name,
       'availablity': availablity ? 1 : 0, // Convert bool to int for storage
+      'rented': rented,
       'notes': notes,
       'image': image,
     };
