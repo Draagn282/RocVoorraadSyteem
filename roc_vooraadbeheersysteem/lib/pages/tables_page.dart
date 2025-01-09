@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
@@ -183,7 +184,7 @@ class _CreateDialogState extends State<CreateDialog> {
       availablity: _availabilityController.text.toLowerCase() ==
           'true', // Convert to bool (case-insensitive)
       notes: _notesController.text,
-      image: _imgController.text,
+      image: Uint8List(0),
     );
   }
 

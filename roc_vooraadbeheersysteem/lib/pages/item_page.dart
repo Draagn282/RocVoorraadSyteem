@@ -30,6 +30,12 @@ class _ItemPageState extends State<ItemPage> {
     });
   }
 
+  Future<List<Map<String, dynamic>>> fetchCategories() async {
+    final db = await DatabaseHelper.instance.database;
+    return await db
+        .query('categorie'); // Replace 'categorie' with your table name
+  }
+
   Future<String> fetchCategory(int categoryId) async {
     final db = await DatabaseHelper.instance.database;
     final result = await db.query(
@@ -262,31 +268,65 @@ class _ItemPageState extends State<ItemPage> {
     final TextEditingController notesController =
         TextEditingController(text: item.notes);
     bool availability = item.availablity;
+    int categoryId = item.categorieID;
 
     return await showDialog<Item>(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Edit Item'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
-              ),
-              TextField(
-                controller: notesController,
-                decoration: const InputDecoration(labelText: 'Notes'),
-              ),
-              SwitchListTile(
-                title: const Text('Available'),
-                value: availability,
-                onChanged: (bool value) {
-                  availability = value;
-                },
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Name field
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                ),
+                // Notes field
+                TextField(
+                  controller: notesController,
+                  decoration: const InputDecoration(labelText: 'Notes'),
+                ),
+                // Availability switch
+                SwitchListTile(
+                  title: const Text('Available'),
+                  value: availability,
+                  onChanged: (bool value) {
+                    availability = value;
+                  },
+                ),
+                // Category dropdown
+                FutureBuilder<List<Map<String, dynamic>>>(
+                  future:
+                      fetchCategories(), // Fetch categories from the database
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError || !snapshot.hasData) {
+                      return const Text('Error loading categories');
+                    }
+
+                    final categories = snapshot.data!;
+                    return DropdownButton<int>(
+                      value: categoryId,
+                      onChanged: (int? newValue) {
+                        if (newValue != null) {
+                          categoryId = newValue;
+                        }
+                      },
+                      items: categories.map((category) {
+                        return DropdownMenuItem<int>(
+                          value: category['id'] as int,
+                          child: Text(category['name'] as String),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -296,16 +336,22 @@ class _ItemPageState extends State<ItemPage> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 final editedItem = Item(
                   id: item.id,
                   statusID: item.statusID,
-                  categorieID: item.categorieID,
-                  name: nameController.text,
-                  availablity: availability,
-                  notes: notesController.text,
-                  image: item.image,
+                  categorieID: categoryId, // Updated category ID
+                  name: nameController.text, // Updated name
+                  availablity: availability, // Updated availability
+                  notes: notesController.text, // Updated notes
+                  image: item.image, // Keep the same image
                 );
+
+                // Update the database and refresh the UI
+                await editedItem.save();
+                refreshItem();
+
+                // Close the dialog with the edited item
                 Navigator.of(context).pop(editedItem);
               },
               child: const Text('Save'),

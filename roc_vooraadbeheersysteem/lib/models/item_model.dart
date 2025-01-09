@@ -81,7 +81,7 @@ class Item {
       statusID: 1,
       categorieID: 1,
       availablity: true,
-      image: _imgController.text,
+      image: Uint8List(0),
     );
     // Insert the item into the database
     final id = await DatabaseHelper.instance.createItem(newItem);
@@ -89,7 +89,27 @@ class Item {
   }
 
   Future<void> save() async {
-    // Add save logic here (e.g., insert or update the item in the database)
+    // Ensure this item has an id (required for updating)
+    if (id == null) {
+      log('Error: Cannot save an item without an ID.');
+      return;
+    }
+
+    // Create the updated item instance
+    final updatedItem = Item(
+      id: id, // Ensure the ID is set for updating
+      name: name, // Use the updated name
+      notes: notes, // Use the updated notes
+      statusID: statusID, // Use the updated status ID
+      categorieID: categorieID, // Use the updated category ID
+      availablity: availablity, // Use the updated availability
+      image: image, // Keep the current image unless updated elsewhere
+    );
+
+    // Update the item in the database
+    final rowsAffected = await DatabaseHelper.instance.createItem(updatedItem);
+
+    log('Updated item with id: $id. Rows affected: $rowsAffected');
   }
 
   Future<void> delete() async {
