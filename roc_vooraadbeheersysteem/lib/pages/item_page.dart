@@ -30,6 +30,20 @@ class _ItemPageState extends State<ItemPage> {
     });
   }
 
+  Future<String> fetchCategory(int categoryId) async {
+    final db = await DatabaseHelper.instance.database;
+    final result = await db.query(
+      'categorie', // Replace with your actual categories table name
+      columns: ['name'], // Replace with the column that stores category names
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+    if (result.isNotEmpty) {
+      return result.first['name'] as String;
+    }
+    return 'Unknown';
+  }
+
   @override
   AppBar buildAppBar() {
     return AppBar(
@@ -100,7 +114,7 @@ class _ItemPageState extends State<ItemPage> {
                         //
                         const SizedBox(height: 16),
                         const Text(
-                          'Item Details',
+                          'Item details',
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -108,7 +122,7 @@ class _ItemPageState extends State<ItemPage> {
                         Row(
                           children: [
                             const Text(
-                              'Name:',
+                              'Naam:',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),
@@ -125,7 +139,7 @@ class _ItemPageState extends State<ItemPage> {
                         Row(
                           children: [
                             const Text(
-                              'Notes:',
+                              'Opmerkingen:',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),
@@ -138,11 +152,12 @@ class _ItemPageState extends State<ItemPage> {
                             ),
                           ],
                         ),
+
                         const SizedBox(height: 8),
                         Row(
                           children: [
                             const Text(
-                              'Available:',
+                              'Beschikbaar:',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),
@@ -150,6 +165,53 @@ class _ItemPageState extends State<ItemPage> {
                             Text(
                               item.availablity ? 'Yes' : 'No',
                               style: const TextStyle(fontSize: 18),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                            height: 8), // Consistente verticale ruimte
+                        Row(
+                          children: [
+                            const Text(
+                              'Categorie:',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w500),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: FutureBuilder<String>(
+                                future: fetchCategory(item
+                                    .categorieID), // Call the fetchCategory function
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Text(
+                                      'Loading...',
+                                      style: TextStyle(
+                                          fontSize: 18), // Same styling
+                                    );
+                                  } else if (snapshot.hasError) {
+                                    return const Text(
+                                      'Error loading category',
+                                      style: TextStyle(
+                                          fontSize: 18), // Same styling
+                                    );
+                                  } else if (!snapshot.hasData ||
+                                      snapshot.data == null) {
+                                    return const Text(
+                                      'Unknown',
+                                      style: TextStyle(
+                                          fontSize: 18), // Same styling
+                                    );
+                                  }
+                                  return Text(
+                                    snapshot
+                                        .data!, // Display the fetched category name
+                                    style: const TextStyle(
+                                        fontSize: 18), // Same styling
+                                  );
+                                },
+                              ),
                             ),
                           ],
                         ),
