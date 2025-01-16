@@ -11,7 +11,7 @@ class StudentPage extends BasePage {
   AppBar buildAppBar() {
     return AppBar(
       title: const Text(
-        'Student Page',
+        'Studenten Pagina',
         style: TextStyle(color: Color(0xff3f2e56)),
       ),
     );
@@ -24,8 +24,7 @@ class StudentPage extends BasePage {
       child: ListView(
         children: const [
           Text(
-
-            'Students Table',
+            'Studenten Tabel',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
@@ -81,7 +80,7 @@ class _StudentsTableState extends State<StudentsTable> {
         TextField(
           controller: _searchController,
           decoration: const InputDecoration(
-            labelText: 'Search Students by Name',
+            labelText: 'Zoek Studenten per naam',
             border: OutlineInputBorder(),
           ),
           onChanged: (value) => _filterStudents(),
@@ -96,12 +95,12 @@ class _StudentsTableState extends State<StudentsTable> {
               headingRowHeight: 50,
               columns: const <DataColumn>[
                 DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Student ID')),
-                DataColumn(label: Text('email')),
-                DataColumn(label: Text('Class')),
+                DataColumn(label: Text('Naam')),
+                DataColumn(label: Text('Studenten ID')),
+                DataColumn(label: Text('Email')),
+                DataColumn(label: Text('Klas')),
                 DataColumn(label: Text('Cohort')),
-                DataColumn(label: Text('notes')),
+                DataColumn(label: Text('Notities')),
                 DataColumn(label: Text('')),
               ],
               rows: _filteredStudents.map((student) {
@@ -118,7 +117,7 @@ class _StudentsTableState extends State<StudentsTable> {
                     DataCell(Row(
    children: [
                         IconButton(
-                          icon: const Icon(Icons.edit),
+                          icon: const Icon(Icons.search),
                           onPressed: () {
                             // Handle edit action
                           },

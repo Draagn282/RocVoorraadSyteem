@@ -7,6 +7,7 @@ import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
 import 'package:roc_vooraadbeheersysteem/models/category_model.dart';
 import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
 import 'package:roc_vooraadbeheersysteem/models/Status_model.dart';
+import 'package:roc_vooraadbeheersysteem/pages/item_page.dart';
 
 class TablesPage extends BasePage {
   const TablesPage({super.key});
@@ -15,7 +16,7 @@ class TablesPage extends BasePage {
   AppBar buildAppBar() {
     return AppBar(
       title: const Text(
-        'Tables Page',
+        'Tabellen Pagina',
         style: TextStyle(color: Color(0xff3f2e56)),
       ),
     );
@@ -28,7 +29,7 @@ class TablesPage extends BasePage {
       child: ListView(
         children: const [
           Text(
-            'Items Table',
+            'Item Tabel',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           CreateDialog(),
@@ -36,14 +37,14 @@ class TablesPage extends BasePage {
           ItemsTable(),
           SizedBox(height: 20),
           Text(
-            'Categories Table',
+            'Categorie Tabel',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
           CategoriesTable(),
           SizedBox(height: 20),
           Text(
-            'Status Table',
+            'Status Tabel',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
@@ -98,7 +99,7 @@ class _ItemsTableState extends State<ItemsTable> {
         TextField(
           controller: _searchController,
           decoration: const InputDecoration(
-            labelText: 'Search Items by Name',
+            labelText: 'Zoek Items per naam',
             border: OutlineInputBorder(),
           ),
           onChanged: (value) => _filterItems(),
@@ -113,32 +114,67 @@ class _ItemsTableState extends State<ItemsTable> {
               headingRowHeight: 50,
               columns: const <DataColumn>[
                 DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Naam')),
                 DataColumn(label: Text('Status')),
-                DataColumn(label: Text('Group')),
-                DataColumn(label: Text('Availability')),
-                DataColumn(label: Text('Notes')),
-                DataColumn(label: Text('Rented')),
-                DataColumn(label: Text('Actions')),
+                DataColumn(label: Text('Categorie')),
+                DataColumn(label: Text('Beschikbaarheid')),
+                DataColumn(label: Text('Notities')),
+                DataColumn(label: Text('Uitgeleend')),
+                DataColumn(label: Text('')),
               ],
               rows: _filteredItems.map((item) {
                 return DataRow(
                   cells: <DataCell>[
                     DataCell(Text(item.id.toString())),
                     DataCell(Text(item.name ?? '')),
-                    DataCell(Text(item.statusID.toString() ?? 'N/A')),
-                    DataCell(Text(item.categorieID.toString() ?? 'N/A')),
                     DataCell(
-                        Text(item.availablity ? 'Available' : 'Unavailable')),
+                      FutureBuilder<String?>(
+                        future: DatabaseHelper.instance.getStatusNameById(item.statusID),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Text('Loading...');
+                          } else if (snapshot.hasError) {
+                            return const Text('Error');
+                          } else {
+                            return Text(snapshot.data ?? 'Unknown');
+                          }
+                        },
+                      ),
+                    ),
+                    DataCell(
+                      FutureBuilder<String?>(
+                        future: DatabaseHelper.instance.getCategoryNameById(item.categorieID),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Text('Loading...');
+                          } else if (snapshot.hasError) {
+                            return const Text('Error');
+                          } else {
+                            return Text(snapshot.data ?? 'Unknown');
+                          }
+                        },
+                      ),
+                    ),
+                    DataCell(
+                      Text(item.availablity ? 'Beschikbaar' : 'niet Beschikbaar'),
+                    ),
                     DataCell(Text(item.notes ?? '')),
-                    DataCell(Text(item.rented != null ? '${item.rented.year}-${item.rented.month.toString().padLeft(2, '0')}-${item.rented.day.toString().padLeft(2, '0')}' : 'N/A',)),
+                    DataCell(Text(
+                      item.rented != null
+                          ? '${item.rented!.year}-${item.rented!.month.toString().padLeft(2, '0')}-${item.rented!.day.toString().padLeft(2, '0')}'
+                          : 'N/A',
+                    )),
                     DataCell(Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.edit),
+                          icon: const Icon(Icons.search),
                           onPressed: () {
-                            // Handle edit action
-                          },
+                              final itemId = item.id;
+                              Navigator.pushNamed(
+                                context,
+                                '/item',
+                                arguments: itemId,
+                              );                          },
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
@@ -150,6 +186,7 @@ class _ItemsTableState extends State<ItemsTable> {
                     )),
                   ],
                 );
+
               }).toList(),
             ),
           ),
@@ -275,11 +312,11 @@ class _CategoriesTableState extends State<CategoriesTable> {
   }
 
   Future<void> _fetchCategories() async {
-    final categoriesData = await DatabaseHelper.instance.getAllItems();
+    final categoriesData = await DatabaseHelper.instance.getAllCategories();
     setState(() {
       _categories =
           categoriesData.map((category) => Category.fromMap(category)).toList();
-      _filteredCategories = List.from(_categories); // Clone the list
+      _filteredCategories = List.from(_categories);
     });
   }
 
@@ -299,7 +336,7 @@ class _CategoriesTableState extends State<CategoriesTable> {
         TextField(
           controller: _searchController,
           decoration: const InputDecoration(
-            labelText: 'Search Categories by Name',
+            labelText: 'Zoek Categorieën per naam',
             border: OutlineInputBorder(),
           ),
           onChanged: (value) => _filterCategories(),
@@ -314,8 +351,8 @@ class _CategoriesTableState extends State<CategoriesTable> {
               headingRowHeight: 50,
               columns: const <DataColumn>[
                 DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Actions')),
+                DataColumn(label: Text('Naam')),
+                DataColumn(label: Text('')),
               ],
               rows: _filteredCategories.map((category) {
                 return DataRow(
@@ -325,7 +362,7 @@ class _CategoriesTableState extends State<CategoriesTable> {
                     DataCell(Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.edit),
+                          icon: const Icon(Icons.search),
                           onPressed: () {
                             // Handle edit action
                           },
@@ -391,7 +428,7 @@ class _StatusTableState extends State<StatusTable> {
         TextField(
           controller: _searchController,
           decoration: const InputDecoration(
-            labelText: 'Search Status by Name',
+            labelText: 'Zoek Status per naam',
             border: OutlineInputBorder(),
           ),
           onChanged: (value) => _filterStatuses(),
@@ -406,8 +443,8 @@ class _StatusTableState extends State<StatusTable> {
               headingRowHeight: 50,
               columns: const <DataColumn>[
                 DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Actions')),
+                DataColumn(label: Text('Naam')),
+                DataColumn(label: Text('')),
               ],
               rows: _filteredStatuses.map((status) {
                 return DataRow(
@@ -417,11 +454,10 @@ class _StatusTableState extends State<StatusTable> {
                     DataCell(Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            // Handle edit action
-                          },
-                        ),
+                            icon: const Icon(Icons.search),
+                            onPressed: () {
+                            },
+                          ),
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {

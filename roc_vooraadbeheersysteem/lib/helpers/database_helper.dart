@@ -164,6 +164,55 @@ Future<List<Map<String, dynamic>>> getAllStudents() async {
   return result; // Return the full list of results
 }
 
+Future<String?> getStatusNameById(int statusID) async {
+  final db = await database;
+  final result = await db.query(
+    'status',
+    columns: ['name'],
+    where: 'id = ?',
+    whereArgs: [statusID],
+    limit: 1,
+  );
+  return result.isNotEmpty ? result.first['name'] as String : null;
+}
+
+Future<String?> getCategoryNameById(int categoryID) async {
+  final db = await database;
+  final result = await db.query(
+    'categorie',
+    columns: ['name'],
+    where: 'id = ?',
+    whereArgs: [categoryID],
+    limit: 1,
+  );
+  return result.isNotEmpty ? result.first['name'] as String : null;
+}
+
+Future<String?> getStudentNameById(int studentID) async {
+  final db = await database;
+  final result = await db.query(
+    'student',
+    columns: ['name'],
+    where: 'id = ?',
+    whereArgs: [studentID],
+    limit: 1,
+  );
+  return result.isNotEmpty ? result.first['name'] as String : null;
+}
+
+Future<String?> getItemNameById(int itemID) async {
+  final db = await database;
+  final result = await db.query(
+    'item',
+    columns: ['name'],
+    where: 'id = ?',
+    whereArgs: [itemID],
+    limit: 1,
+  );
+  return result.isNotEmpty ? result.first['name'] as String : null;
+}
+
+
 Future<void> insertOrUpdate({
   required String tableName,
   required Map<String, dynamic> data,

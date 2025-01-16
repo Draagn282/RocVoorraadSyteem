@@ -98,7 +98,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: const Text(
-                    'Navigation',
+                    'Navigatie',
                     style: TextStyle(
                       color: Color(0xfff0f0f7),
                       fontSize: 22,
@@ -109,33 +109,33 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                 ListTile(
                   leading: const Icon(Icons.home, color: Color(0xff3f2e56)),
                   title: const Text(
-                    'Home',
+                    'Thuis',
                     style: TextStyle(color: Color(0xff3f2e56)),
                   ),
                   onTap: () {
                     _navigateTo('/home');
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.pageview, color: Color(0xff3f2e56)),
-                  title: const Text(
-                    'Test Page',
-                    style: TextStyle(color: Color(0xff3f2e56)),
-                  ),
-                  onTap: () {
-                    _navigateTo('/test');
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.archive, color: Color(0xff3f2e56)),
-                  title: const Text(
-                    'Archive',
-                    style: TextStyle(color: Color(0xff3f2e56)),
-                  ),
-                  onTap: () {
-                    _navigateTo('/archive');
-                  },
-                ),
+                // ListTile(
+                //   leading: const Icon(Icons.pageview, color: Color(0xff3f2e56)),
+                //   title: const Text(
+                //     'Test Page',
+                //     style: TextStyle(color: Color(0xff3f2e56)),
+                //   ),
+                //   onTap: () {
+                //     _navigateTo('/test');
+                //   },
+                // ),
+                // ListTile(
+                //   leading: const Icon(Icons.archive, color: Color(0xff3f2e56)),
+                //   title: const Text(
+                //     'Archive',
+                //     style: TextStyle(color: Color(0xff3f2e56)),
+                //   ),
+                //   onTap: () {
+                //     _navigateTo('/archive');
+                //   },
+                // ),
                 ListTile(
                   leading: const Icon(Icons.list, color: Color(0xff3f2e56)),
                   title: const Text(
@@ -149,7 +149,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                 ListTile(
                   leading: const Icon(Icons.person, color: Color(0xff3f2e56)),
                   title: const Text(
-                    'Students',
+                    'Studenten',
                     style: TextStyle(color: Color(0xff3f2e56)),
                   ),
                   onTap: () {
@@ -160,7 +160,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                   leading:
                       const Icon(Icons.table_chart, color: Color(0xff3f2e56)),
                   title: const Text(
-                    'Tables',
+                    'Tabellen',
                     style: TextStyle(color: Color(0xff3f2e56)),
                   ),
                   onTap: () {
@@ -171,7 +171,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                   leading: const Icon(Icons.add_shopping_cart,
                       color: Color(0xff3f2e56)),
                   title: const Text(
-                    'Borrow',
+                    'Leenen',
                     style: TextStyle(color: Color(0xff3f2e56)),
                   ),
                   onTap: () {
