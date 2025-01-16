@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
 import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
@@ -6,7 +9,7 @@ import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
 import 'package:roc_vooraadbeheersysteem/models/Status_model.dart';
 
 class TablesPage extends BasePage {
-  const TablesPage({Key? key}) : super(key: key);
+  const TablesPage({super.key});
 
   @override
   AppBar buildAppBar() {
@@ -18,32 +21,33 @@ class TablesPage extends BasePage {
     );
   }
 
-@override
-Widget buildBody(BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: ListView(
-      children: const [
-        Text(
-          'Items Table',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        ItemsTable(),
-       SizedBox(height: 20),
-        Text(
-          'Categories Table',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        CategoriesTable(),
-        SizedBox(height: 20),
-        Text(
-          'Status Table',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        StatusTable(),
+  @override
+  Widget buildBody(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ListView(
+        children: const [
+          Text(
+            'Items Table',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          CreateDialog(),
+          SizedBox(height: 10),
+          ItemsTable(),
+          SizedBox(height: 20),
+          Text(
+            'Categories Table',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          CategoriesTable(),
+          SizedBox(height: 20),
+          Text(
+            'Status Table',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          StatusTable(),
         ],
       ),
     );
@@ -51,7 +55,7 @@ Widget buildBody(BuildContext context) {
 }
 
 class ItemsTable extends StatefulWidget {
-  const ItemsTable({Key? key}) : super(key: key);
+  const ItemsTable({super.key});
 
   @override
   _ItemsTableState createState() => _ItemsTableState();
@@ -68,6 +72,7 @@ class _ItemsTableState extends State<ItemsTable> {
     _fetchItems(); // Fetch items during initialization
   }
 
+
     Future<void> _fetchItems() async {
       final itemsData = await DatabaseHelper.instance.getAllItems();
       setState(() {
@@ -81,7 +86,7 @@ class _ItemsTableState extends State<ItemsTable> {
     String searchText = _searchController.text.toLowerCase();
     setState(() {
       _filteredItems = _items.where((item) {
-        return item.name?.toLowerCase().contains(searchText) ?? false;
+        return item.name.toLowerCase().contains(searchText) ?? false;
       }).toList();
     });
   }
@@ -121,9 +126,10 @@ class _ItemsTableState extends State<ItemsTable> {
                   cells: <DataCell>[
                     DataCell(Text(item.id.toString())),
                     DataCell(Text(item.name ?? '')),
-                    DataCell(Text(item.statusID?.toString() ?? 'N/A')),
-                    DataCell(Text(item.categorieID?.toString() ?? 'N/A')),
-                    DataCell(Text(item.availablity ? 'Available' : 'Unavailable')),
+                    DataCell(Text(item.statusID.toString() ?? 'N/A')),
+                    DataCell(Text(item.categorieID.toString() ?? 'N/A')),
+                    DataCell(
+                        Text(item.availablity ? 'Available' : 'Unavailable')),
                     DataCell(Text(item.notes ?? '')),
                     DataCell(Text(item.rented != null ? '${item.rented.year}-${item.rented.month.toString().padLeft(2, '0')}-${item.rented.day.toString().padLeft(2, '0')}' : 'N/A',)),
                     DataCell(Row(
@@ -153,8 +159,104 @@ class _ItemsTableState extends State<ItemsTable> {
   }
 }
 
+class CreateDialog extends StatefulWidget {
+  const CreateDialog({super.key});
+
+  @override
+  _CreateDialogState createState() => _CreateDialogState();
+}
+
+class _CreateDialogState extends State<CreateDialog> {
+  final _nameController = TextEditingController();
+  final _notesController = TextEditingController();
+  final _statusController = TextEditingController();
+  final _groupController = TextEditingController();
+  final _categorieController = TextEditingController();
+  final _availabilityController = TextEditingController();
+
+  final _imgController = TextEditingController();
+
+  Item createItemFromControllers() {
+    return Item(
+      id: 0, // Assuming this is an auto-incrementing field
+      statusID: int.tryParse(_statusController.text) ??
+          0, // Parse to int or default to 0
+      categorieID: 0, // You might need to get this from another source
+      name: _nameController.text,
+      availablity: _availabilityController.text.toLowerCase() ==
+          'true', // Convert to bool (case-insensitive)
+      notes: _notesController.text,
+      image: Uint8List(0),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () => showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Create new item'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              TextField(
+                controller: _notesController,
+                decoration: const InputDecoration(labelText: 'Notes'),
+              ),
+              TextField(
+                controller: _statusController,
+                decoration: const InputDecoration(labelText: 'status'),
+              ),
+              TextField(
+                controller: _groupController,
+                decoration: const InputDecoration(labelText: 'group'),
+              ),
+              TextField(
+                controller: _categorieController,
+                decoration: const InputDecoration(labelText: 'categorie'),
+              ),
+              TextField(
+                controller: _availabilityController,
+                decoration: const InputDecoration(labelText: 'availability'),
+              ),
+              TextField(
+                controller: _imgController,
+                decoration: const InputDecoration(labelText: 'img'),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => {Navigator.pop(context, 'Cancel')},
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Item.create(
+                  _nameController,
+                  _notesController,
+                  _imgController,
+                );
+                // Close the dialog
+                Navigator.pop(context, 'Create');
+              },
+              child: const Text('Create'),
+            ),
+          ],
+        ),
+      ),
+      child: const Text('Show Dialog'),
+    );
+  }
+}
+
 class CategoriesTable extends StatefulWidget {
-  const CategoriesTable({Key? key}) : super(key: key);
+  const CategoriesTable({super.key});
 
   @override
   _CategoriesTableState createState() => _CategoriesTableState();
@@ -171,15 +273,14 @@ class _CategoriesTableState extends State<CategoriesTable> {
     _fetchCategories();
   }
 
-
-Future<void> _fetchCategories() async {
-  final categoriesData = await DatabaseHelper.instance.getAllItems();
-  setState(() {
-    _categories = categoriesData.map((category) => Category.fromMap(category)).toList();
-    _filteredCategories = List.from(_categories); // Clone the list
-  });
-}
-
+  Future<void> _fetchCategories() async {
+    final categoriesData = await DatabaseHelper.instance.getAllItems();
+    setState(() {
+      _categories =
+          categoriesData.map((category) => Category.fromMap(category)).toList();
+      _filteredCategories = List.from(_categories); // Clone the list
+    });
+  }
 
   void _filterCategories() {
     String searchText = _searchController.text.toLowerCase();
@@ -246,8 +347,9 @@ Future<void> _fetchCategories() async {
     );
   }
 }
+
 class StatusTable extends StatefulWidget {
-  const StatusTable({Key? key}) : super(key: key);
+  const StatusTable({super.key});
 
   @override
   _StatusTableState createState() => _StatusTableState();

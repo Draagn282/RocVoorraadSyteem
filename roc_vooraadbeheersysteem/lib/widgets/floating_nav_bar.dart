@@ -9,7 +9,7 @@ import 'package:roc_vooraadbeheersysteem/pages/tables_page.dart';
 import 'package:roc_vooraadbeheersysteem/pages/borrow_page.dart';
 
 class FloatingNavBar extends StatefulWidget {
-  const FloatingNavBar({Key? key}) : super(key: key);
+  const FloatingNavBar({super.key});
 
   @override
   _FloatingNavBarState createState() => _FloatingNavBarState();
@@ -45,21 +45,21 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
   Widget _getPageByRouteName(String routeName) {
     switch (routeName) {
       case '/home':
-        return HomePage();
+        return const HomePage();
       case '/test':
-        return TestPage();
+        return const TestPage();
       case '/archive':
-        return ArchivePage();
+        return const ArchivePage();
       case '/item':
-        return ItemPage(itemId: 1);
+        return const ItemPage(itemId: 1);
       case '/student':
-        return StudentPage();
+        return const StudentPage();
       case '/tables':
-        return TablesPage();
+        return const TablesPage();
       case '/borrow':
-        return BorrowPage();
+        return const BorrowPage();
       default:
-        return HomePage();
+        return const HomePage();
     }
   }
 
@@ -76,7 +76,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
           child: Container(
             width: 220,
             decoration: BoxDecoration(
-              color: const Color(0xfffF0f0f7),
+              color: const Color(0xffff0f0f7),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1),
@@ -100,7 +100,7 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                   child: const Text(
                     'Navigation',
                     style: TextStyle(
-                      color: const Color(0xfff0f0f7),
+                      color: Color(0xfff0f0f7),
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
                     ),

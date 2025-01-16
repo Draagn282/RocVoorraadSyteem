@@ -5,7 +5,7 @@ import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
 import 'package:roc_vooraadbeheersysteem/models/student_model.dart';
 
 class StudentPage extends BasePage {
-  const StudentPage({Key? key}) : super(key: key);
+  const StudentPage({super.key});
 
   @override
   AppBar buildAppBar() {
@@ -24,6 +24,7 @@ class StudentPage extends BasePage {
       child: ListView(
         children: const [
           Text(
+
             'Students Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -38,14 +39,17 @@ class StudentPage extends BasePage {
 class StudentsTable extends StatefulWidget {
   const StudentsTable({Key? key}) : super(key: key);
 
+
   @override
   _StudentsTableState createState() => _StudentsTableState();
 }
 
 class _StudentsTableState extends State<StudentsTable> {
   final _searchController = TextEditingController();
+
   List<Student> _students = [];
   List<Student> _filteredStudents = [];
+
 
   @override
   void initState() {
@@ -103,6 +107,7 @@ class _StudentsTableState extends State<StudentsTable> {
               rows: _filteredStudents.map((student) {
                 return DataRow(
                   cells: <DataCell>[
+
                     DataCell(Text(student.id.toString())),
                     DataCell(Text(student.name ?? '')),
                     DataCell(Text(student.studentID ?? '')),
@@ -111,7 +116,7 @@ class _StudentsTableState extends State<StudentsTable> {
                     DataCell(Text(student.cohort ?? '')),
                     DataCell(Text(student.notes ?? '')),
                     DataCell(Row(
-                      children: [
+   children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
                           onPressed: () {

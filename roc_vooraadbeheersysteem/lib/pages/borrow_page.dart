@@ -8,6 +8,7 @@ class BorrowPage extends BasePage {
   @override
   AppBar buildAppBar() {
     return AppBar(
+
       title: const Text(
         'Borrow Item',
         style: TextStyle(color: Color(0xff3f2e56)),
@@ -16,6 +17,7 @@ class BorrowPage extends BasePage {
       iconTheme: const IconThemeData(color: Color(0xff3f2e56)),
       elevation: 1,
     );
+
   }
 
   @override
@@ -169,9 +171,11 @@ Future<void> fetchItemDetails(String itemId) async {
     );
   }
 
+
   void _showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
   }
+
 }

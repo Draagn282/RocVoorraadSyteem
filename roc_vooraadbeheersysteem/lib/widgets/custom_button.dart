@@ -6,10 +6,10 @@ class CustomButton extends StatelessWidget {
   final String routeName;
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.routeName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
