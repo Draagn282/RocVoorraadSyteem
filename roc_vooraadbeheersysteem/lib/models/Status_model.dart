@@ -35,7 +35,7 @@ import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
       final data = await DatabaseHelper.instance.getData(
         tableName: 'item',
         whereClause: 'id = 1', // Use placeholder for safety
-        // whereArgs: [id],
+        whereArgs: [id],
       );
 
       // Check if data is returned

@@ -85,10 +85,12 @@ CREATE TABLE item (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     userTypeID INT,
     name TEXT,
+    email TEXT,
     studentID TEXT,
     cardID TEXT,
-    class TEXT,
+    studentClass TEXT,
     cohort TEXT,
+    notes TEXT,
     FOREIGN KEY (userTypeID) REFERENCES userType (id)
   )
 ''');
@@ -102,24 +104,29 @@ CREATE TABLE item (
 ''');
   }
 
-  Future<List<Map<String, dynamic>>?> getData({
-    required String tableName,
-    required String whereClause,
-    // required List<dynamic> whereArgs,
-    List<String>? columns,
-  }) async {
-    print("vind" + tableName + "whereclause" + whereClause);
-    final db = await database;
-    print(db.query);
-    // Execute the query with dynamic parameters
-    final result = await db.query(tableName + " WHERE " + whereClause + ";");
-    print(result);
-    if (result.isEmpty) {
-      return null;
-    }
+Future<List<Map<String, dynamic>>?> getData({
+  required String tableName,
+  required String whereClause,
+  required List<dynamic> whereArgs, // Added required whereArgs
+  List<String>? columns,
+}) async {
+  final db = await database;
+  final result = await db.query(
+    tableName,
+    where: whereClause,
+    whereArgs: whereArgs, // Use whereArgs for parameterized queries
+    columns: columns,
+  );
 
-    return result;
+  if (result.isEmpty) {
+    return null;
   }
+
+  return result;
+}
+
+
+  
 Future<List<Map<String, dynamic>>> getAllItems() async {
   final db = await database;
   final result = await db.query('item');
@@ -138,15 +145,65 @@ Future<List<Map<String, dynamic>>> getAllStatuses() async {
   return result; // Return the full list of results
 }
 
-  // A method that retrieves all the notes from the Notes table.
-  // Future<List<Item>> getAll() async {
-  //   // Get a reference to the database.
-  //   final db = await database;
+Future<List<Map<String, dynamic>>> getAllStudents() async {
+  final db = await database;
+  final result = await db.query('user');
+  return result; // Return the full list of results
+}
 
-  //   // Query the table for all The Notes. {SELECT * FROM Notes ORDER BY Id ASC}
-  //   final result = await db.query(tableNotes, orderBy: '$colId ASC');
+Future<void> insertOrUpdate({
+  required String tableName,
+  required Map<String, dynamic> data,
+  required String whereClause,
+  required List<dynamic> whereArgs,
+}) async {
+  final db = await database;
 
-  //   // Convert the List<Map<String, dynamic> into a List<Note>.
-  //   return result.map((json) => Item.fromJson(json)).toList();
-  // }
+  // Check if the record exists
+  final existingRecords = await db.query(
+    tableName,
+    where: whereClause,
+    whereArgs: whereArgs,
+  );
+
+  if (existingRecords.isNotEmpty) {
+    // Update the existing record
+    await db.update(
+      tableName,
+      data,
+      where: whereClause,
+      whereArgs: whereArgs,
+    );
+  } else {
+    // Insert as a new record
+    await db.insert(
+      tableName,
+      data,
+    );
+  }
+}
+
+Future<void> delete({
+  required String tableName,
+  required String whereClause,
+  required List<dynamic> whereArgs,
+}) async {
+  final db = await database;
+
+  try {
+    await db.delete(
+      tableName,
+      where: whereClause,
+      whereArgs: whereArgs,
+    );
+    log('Deleted record from $tableName where $whereClause with args $whereArgs');
+  } catch (e) {
+    log('Error deleting record from $tableName', error: e);
+    rethrow; // Optionally rethrow the error if needed
+  }
+}
+
+
+
+
 }
