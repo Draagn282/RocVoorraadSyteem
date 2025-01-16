@@ -104,24 +104,29 @@ CREATE TABLE item (
 ''');
   }
 
-  Future<List<Map<String, dynamic>>?> getData({
-    required String tableName,
-    required String whereClause,
-    // required List<dynamic> whereArgs,
-    List<String>? columns,
-  }) async {
-    print("vind" + tableName + "whereclause" + whereClause);
-    final db = await database;
-    print(db.query);
-    // Execute the query with dynamic parameters
-    final result = await db.query(tableName + " WHERE " + whereClause + ";");
-    print(result);
-    if (result.isEmpty) {
-      return null;
-    }
+Future<List<Map<String, dynamic>>?> getData({
+  required String tableName,
+  required String whereClause,
+  required List<dynamic> whereArgs, // Added required whereArgs
+  List<String>? columns,
+}) async {
+  final db = await database;
+  final result = await db.query(
+    tableName,
+    where: whereClause,
+    whereArgs: whereArgs, // Use whereArgs for parameterized queries
+    columns: columns,
+  );
 
-    return result;
+  if (result.isEmpty) {
+    return null;
   }
+
+  return result;
+}
+
+
+  
 Future<List<Map<String, dynamic>>> getAllItems() async {
   final db = await database;
   final result = await db.query('item');

@@ -57,6 +57,8 @@ class Student {
       final data = await DatabaseHelper.instance.getData(
         tableName: 'student',
         whereClause: 'id = ?',
+        whereArgs: [id],
+
       );
 
       // Check if data is retur ned

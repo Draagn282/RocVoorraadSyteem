@@ -68,13 +68,13 @@ class _ItemsTableState extends State<ItemsTable> {
     _fetchItems(); // Fetch items during initialization
   }
 
-Future<void> _fetchItems() async {
-  final itemsData = await DatabaseHelper.instance.getAllItems();
-  setState(() {
-    _items = itemsData.map((item) => Item.fromMap(item)).toList();
-    _filteredItems = List.from(_items); // Clone the list
-  });
-}
+    Future<void> _fetchItems() async {
+      final itemsData = await DatabaseHelper.instance.getAllItems();
+      setState(() {
+        _items = itemsData.map((item) => Item.fromMap(item)).toList();
+        _filteredItems = List.from(_items); // Clone the list
+      });
+    }
 
 
   void _filterItems() {

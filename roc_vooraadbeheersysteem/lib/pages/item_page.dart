@@ -33,7 +33,7 @@ class _ItemPageState extends State<ItemPage> {
     final data = await DatabaseHelper.instance.getData(
       tableName: 'item',
       whereClause: 'id = ?',
-      // whereArgs: [id],
+      whereArgs: [id],
     );
 
     if (data != null && data.isNotEmpty) {

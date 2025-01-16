@@ -63,7 +63,7 @@ class Item {
       final data = await DatabaseHelper.instance.getData(
         tableName: 'item',
         whereClause: 'id = 1', // Use placeholder for safety
-        // whereArgs: [id],
+        whereArgs: [id],
       );
 
       // Check if data is returned
