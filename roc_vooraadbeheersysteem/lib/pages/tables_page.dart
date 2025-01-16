@@ -72,13 +72,15 @@ class _ItemsTableState extends State<ItemsTable> {
     _fetchItems(); // Fetch items during initialization
   }
 
-  Future<void> _fetchItems() async {
-    final itemsData = await DatabaseHelper.instance.getAllItems();
-    setState(() {
-      _items = itemsData.map((item) => Item.fromMap(item)).toList();
-      _filteredItems = List.from(_items); // Clone the list
-    });
-  }
+
+    Future<void> _fetchItems() async {
+      final itemsData = await DatabaseHelper.instance.getAllItems();
+      setState(() {
+        _items = itemsData.map((item) => Item.fromMap(item)).toList();
+        _filteredItems = List.from(_items); // Clone the list
+      });
+    }
+
 
   void _filterItems() {
     String searchText = _searchController.text.toLowerCase();
@@ -116,7 +118,7 @@ class _ItemsTableState extends State<ItemsTable> {
                 DataColumn(label: Text('Group')),
                 DataColumn(label: Text('Availability')),
                 DataColumn(label: Text('Notes')),
-                // DataColumn(label: Text('IMG')),
+                DataColumn(label: Text('Rented')),
                 DataColumn(label: Text('Actions')),
               ],
               rows: _filteredItems.map((item) {
@@ -129,7 +131,7 @@ class _ItemsTableState extends State<ItemsTable> {
                     DataCell(
                         Text(item.availablity ? 'Available' : 'Unavailable')),
                     DataCell(Text(item.notes ?? '')),
-                    // DataCell(Text(item.image ?? '')),
+                    DataCell(Text(item.rented != null ? '${item.rented.year}-${item.rented.month.toString().padLeft(2, '0')}-${item.rented.day.toString().padLeft(2, '0')}' : 'N/A',)),
                     DataCell(Row(
                       children: [
                         IconButton(

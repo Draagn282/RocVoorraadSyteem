@@ -1,6 +1,8 @@
-// lib/pages/test/test_page.dart
+// lib/pages/test/student_page.dart
 import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
+import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
+import 'package:roc_vooraadbeheersysteem/models/student_model.dart';
 
 class StudentPage extends BasePage {
   const StudentPage({super.key});
@@ -18,64 +20,56 @@ class StudentPage extends BasePage {
   @override
   Widget buildBody(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0), // Add padding to the entire page
+      padding: const EdgeInsets.all(16.0),
       child: ListView(
         children: const [
           Text(
-            'Items Table',
+
+            'Students Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
-          ItemsTable(), // Add ItemsTable widget
+          StudentsTable(),
         ],
       ),
     );
   }
 }
 
-class ItemsTable extends StatefulWidget {
-  const ItemsTable({super.key});
+class StudentsTable extends StatefulWidget {
+  const StudentsTable({Key? key}) : super(key: key);
+
 
   @override
-  _ItemsTableState createState() => _ItemsTableState();
+  _StudentsTableState createState() => _StudentsTableState();
 }
 
-class _ItemsTableState extends State<ItemsTable> {
+class _StudentsTableState extends State<StudentsTable> {
   final _searchController = TextEditingController();
-  final List<Map<String, dynamic>> _items = [
-    {
-      'id': 1,
-      'name': 'John Doe',
-      'studentId': 'S123',
-      'class': 'Class A',
-      'totalBorrows': 5,
-      'currentlyBorrowing': 1,
-      'timesLate': 0,
-    },
-    {
-      'id': 2,
-      'name': 'Jane Smith',
-      'studentId': 'S456',
-      'class': 'Class B',
-      'totalBorrows': 3,
-      'currentlyBorrowing': 2,
-      'timesLate': 1,
-    },
-  ];
 
-  List<Map<String, dynamic>> _filteredItems = [];
+  List<Student> _students = [];
+  List<Student> _filteredStudents = [];
+
 
   @override
   void initState() {
     super.initState();
-    _filteredItems = _items; // Initialize with all items
+    _fetchStudents();
   }
 
-  void _filterItems() {
+  Future<void> _fetchStudents() async {
+    final studentData = await DatabaseHelper.instance.getAllStudents();
+    setState(() {
+      _students = studentData.map((student) => Student.fromMap(student)).toList();
+      _filteredStudents = List.from(_students);
+    });
+  }
+
+  void _filterStudents() {
     String searchText = _searchController.text.toLowerCase();
     setState(() {
-      _filteredItems = _items.where((item) {
-        return item['name'].toLowerCase().contains(searchText);
+      _filteredStudents = _students.where((student) {
+        return student.name?.toLowerCase().contains(searchText) ?? false;
       }).toList();
     });
   }
@@ -84,27 +78,17 @@ class _ItemsTableState extends State<ItemsTable> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Row(
-            children: [
-              // Search Bar for Items
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: const InputDecoration(
-                    labelText: 'Search Students by Name',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) => _filterItems(),
-                ),
-              ),
-            ],
+        TextField(
+          controller: _searchController,
+          decoration: const InputDecoration(
+            labelText: 'Search Students by Name',
+            border: OutlineInputBorder(),
           ),
+          onChanged: (value) => _filterStudents(),
         ),
-        // Define a fixed height for the DataTable
+        const SizedBox(height: 16.0),
         SizedBox(
-          height: 300, // Adjust this height as needed
+          height: 300,
           child: SingleChildScrollView(
             child: DataTable(
               columnSpacing: 50,
@@ -114,26 +98,25 @@ class _ItemsTableState extends State<ItemsTable> {
                 DataColumn(label: Text('ID')),
                 DataColumn(label: Text('Name')),
                 DataColumn(label: Text('Student ID')),
+                DataColumn(label: Text('email')),
                 DataColumn(label: Text('Class')),
-                DataColumn(label: Text('Total Borrows')),
-                DataColumn(label: Text('Currently Borrowing')),
-                DataColumn(label: Text('Times Late')),
-                DataColumn(label: Text('Actions')), // New Actions column
+                DataColumn(label: Text('Cohort')),
+                DataColumn(label: Text('notes')),
+                DataColumn(label: Text('')),
               ],
-              rows: _filteredItems.map((item) {
+              rows: _filteredStudents.map((student) {
                 return DataRow(
                   cells: <DataCell>[
-                    DataCell(Text(item['id'].toString())),
-                    DataCell(Text(item['name'] ?? '')),
-                    DataCell(Text(item['studentId'] ?? '')),
-                    DataCell(Text(item['class'] ?? '')),
-                    DataCell(Text(item['totalBorrows'].toString() ?? '0')),
-                    DataCell(
-                        Text(item['currentlyBorrowing'].toString() ?? '0')),
-                    DataCell(Text(item['timesLate'].toString() ?? '0')),
+
+                    DataCell(Text(student.id.toString())),
+                    DataCell(Text(student.name ?? '')),
+                    DataCell(Text(student.studentID ?? '')),
+                    DataCell(Text(student.email ?? '')),
+                    DataCell(Text(student.studentClass ?? '')),
+                    DataCell(Text(student.cohort ?? '')),
+                    DataCell(Text(student.notes ?? '')),
                     DataCell(Row(
-                      // Action buttons
-                      children: [
+   children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
                           onPressed: () {

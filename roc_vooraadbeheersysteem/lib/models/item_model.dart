@@ -9,6 +9,7 @@ class Item {
   final int categorieID; // Foreign key to the categorie table
   final String name;
   final bool availablity; // Boolean indicating availability
+  final DateTime rented;
   final String notes; // Additional notes about the item
   final Uint8List image; // Binary data for the item's image
 
@@ -18,6 +19,7 @@ class Item {
     required this.categorieID,
     required this.name,
     required this.availablity,
+    required this.rented,
     required this.notes,
     required this.image,
   });
@@ -29,11 +31,15 @@ class Item {
       id: map['id'] as int,
       statusID: map['statusID'] as int,
       categorieID: map['categorieID'] as int,
-      name: map['name'] as String,
-      availablity: map['availablity'] == 1,
-      notes: map['notes'] as String,
-      image:
-          image is Uint8List ? image : Uint8List(0), // Default to empty if null
+
+      name: map['name'] as String? ?? '',  // Use empty string if null
+      availablity: map['availablity'] == 1, // Convert int to bool
+      rented: map['rented'] != null
+        ? DateTime.parse(map['rented'] as String) // Parse if not null
+        : DateTime.now(), // Provide a default value if null
+      notes: map['notes'] as String? ?? '', // Use empty string if null
+      image: map['image'] as String? ?? '', // Use empty string if null
+
     );
   }
 
@@ -45,6 +51,7 @@ class Item {
       'categorieID': categorieID,
       'name': name,
       'availablity': availablity ? 1 : 0, // Convert bool to int for storage
+      'rented': rented,
       'notes': notes,
       'image': image, // Store binary data in the database
     };
@@ -56,8 +63,10 @@ class Item {
 
       final data = await DatabaseHelper.instance.getData(
         tableName: 'item',
+
         whereClause: 'id = $id', // Use placeholder for safety
-        // whereArgs: [id], // Bind the id parameter
+        whereArgs: [id], // Bind the id parameter
+
       );
 
       if (data != null && data.isNotEmpty) {

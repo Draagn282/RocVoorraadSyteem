@@ -30,11 +30,13 @@ class _ItemPageState extends State<ItemPage> {
     });
   }
 
+
   Future<List<Map<String, dynamic>>> fetchCategories() async {
     final db = await DatabaseHelper.instance.database;
     return await db
         .query('categorie'); // Replace 'categorie' with your table name
   }
+
 
   Future<String> fetchCategory(int categoryId) async {
     final db = await DatabaseHelper.instance.database;
@@ -90,6 +92,7 @@ class _ItemPageState extends State<ItemPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+
                         //
                         //
                         Center(
@@ -118,6 +121,7 @@ class _ItemPageState extends State<ItemPage> {
 
                         //
                         //
+
                         const SizedBox(height: 16),
                         const Text(
                           'Item details',
@@ -409,6 +413,7 @@ class _ItemPageState extends State<ItemPage> {
                   ],
                 ),
               ),
+
               actions: [
                 TextButton(
                   onPressed: () {
@@ -435,6 +440,7 @@ class _ItemPageState extends State<ItemPage> {
               ],
             );
           },
+
         );
       },
     );
