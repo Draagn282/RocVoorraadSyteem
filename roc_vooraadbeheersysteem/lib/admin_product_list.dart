@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AdminViewProductPage extends StatefulWidget {
+  const AdminViewProductPage({super.key});
+
   @override
   _AdminViewProductPageState createState() => _AdminViewProductPageState();
 }
@@ -20,7 +22,7 @@ class _AdminViewProductPageState extends State<AdminViewProductPage> {
   String _selectedCategory = 'All'; // Default category for filter
 
   // Example product data
-  List<Map<String, dynamic>> _products = [
+  final List<Map<String, dynamic>> _products = [
     {
       'id': 1,
       'name': 'Product A',
@@ -79,8 +81,10 @@ class _AdminViewProductPageState extends State<AdminViewProductPage> {
     String searchText = _searchController.text.toLowerCase();
     setState(() {
       _filteredProducts = _products.where((product) {
-        final matchesSearch = product['name'].toLowerCase().contains(searchText);
-        final matchesCategory = _selectedCategory == 'All' || product['group'] == _selectedCategory;
+        final matchesSearch =
+            product['name'].toLowerCase().contains(searchText);
+        final matchesCategory =
+            _selectedCategory == 'All' || product['group'] == _selectedCategory;
         return matchesSearch && matchesCategory;
       }).toList();
     });
@@ -194,8 +198,10 @@ class _AdminViewProductPageState extends State<AdminViewProductPage> {
               rows: _filteredProducts.map((product) {
                 return DataRow(
                   cells: <DataCell>[
-                    DataCell(Text(product['id'].toString())), // Ensure id is converted to String
-                    DataCell(Text(product['name'] ?? '')), // Handle potential null value
+                    DataCell(Text(product['id']
+                        .toString())), // Ensure id is converted to String
+                    DataCell(Text(
+                        product['name'] ?? '')), // Handle potential null value
                     DataCell(Text(product['status'] ?? '')),
                     DataCell(Text(product['group'] ?? '')),
                     DataCell(Text(product['availability'] ?? '')),
@@ -253,7 +259,8 @@ class _AdminViewProductPageState extends State<AdminViewProductPage> {
                       }).toList(),
                       onChanged: (newValue) {
                         setState(() {
-                          selectedGroup = newValue ?? selectedGroup; // Use existing value if null
+                          selectedGroup = newValue ??
+                              selectedGroup; // Use existing value if null
                         });
                       },
                     ),
@@ -264,8 +271,14 @@ class _AdminViewProductPageState extends State<AdminViewProductPage> {
                         border: OutlineInputBorder(),
                       ),
                       value: selectedCondition,
-                      items: ['New', 'Good', 'Used', 'Bad', 'Repair needed', 'In Repair']
-                          .map((String value) {
+                      items: [
+                        'New',
+                        'Good',
+                        'Used',
+                        'Bad',
+                        'Repair needed',
+                        'In Repair'
+                      ].map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -273,7 +286,8 @@ class _AdminViewProductPageState extends State<AdminViewProductPage> {
                       }).toList(),
                       onChanged: (newValue) {
                         setState(() {
-                          selectedCondition = newValue ?? selectedCondition; // Use existing value if null
+                          selectedCondition = newValue ??
+                              selectedCondition; // Use existing value if null
                         });
                       },
                     ),

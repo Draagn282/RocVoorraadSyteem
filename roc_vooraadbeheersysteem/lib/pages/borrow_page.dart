@@ -10,7 +10,7 @@ class BorrowPage extends BasePage {
     return AppBar(
         title: const Text(
       'Borrow Page',
-      style: TextStyle(color: const Color(0xff3f2e56)),
+      style: TextStyle(color: Color(0xff3f2e56)),
     ));
   }
 

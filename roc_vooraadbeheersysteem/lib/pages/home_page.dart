@@ -4,21 +4,21 @@ import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
 import 'package:roc_vooraadbeheersysteem/widgets/custom_button.dart';
 
 class HomePage extends BasePage {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   AppBar buildAppBar() {
     return AppBar(
         title: const Text(
       'Home Page',
-      style: TextStyle(color: const Color(0xff3f2e56)),
+      style: TextStyle(color: Color(0xff3f2e56)),
     ));
   }
 
   @override
   Widget buildBody(BuildContext context) {
-    return Center(
-      child: const Text('This is some random text on the Home Page'),
+    return const Center(
+      child: Text('This is some random text on the Home Page'),
     );
   }
 }

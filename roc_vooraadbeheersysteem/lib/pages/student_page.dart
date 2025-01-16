@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:roc_vooraadbeheersysteem/pages/base_page.dart';
 
 class StudentPage extends BasePage {
-  const StudentPage({Key? key}) : super(key: key);
+  const StudentPage({super.key});
 
   @override
   AppBar buildAppBar() {
@@ -20,13 +20,13 @@ class StudentPage extends BasePage {
     return Padding(
       padding: const EdgeInsets.all(16.0), // Add padding to the entire page
       child: ListView(
-        children: [
-          const Text(
+        children: const [
+          Text(
             'Items Table',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 10),
-          const ItemsTable(), // Add ItemsTable widget
+          SizedBox(height: 10),
+          ItemsTable(), // Add ItemsTable widget
         ],
       ),
     );
@@ -34,7 +34,7 @@ class StudentPage extends BasePage {
 }
 
 class ItemsTable extends StatefulWidget {
-  const ItemsTable({Key? key}) : super(key: key);
+  const ItemsTable({super.key});
 
   @override
   _ItemsTableState createState() => _ItemsTableState();
@@ -42,7 +42,7 @@ class ItemsTable extends StatefulWidget {
 
 class _ItemsTableState extends State<ItemsTable> {
   final _searchController = TextEditingController();
-  List<Map<String, dynamic>> _items = [
+  final List<Map<String, dynamic>> _items = [
     {
       'id': 1,
       'name': 'John Doe',
@@ -128,9 +128,11 @@ class _ItemsTableState extends State<ItemsTable> {
                     DataCell(Text(item['studentId'] ?? '')),
                     DataCell(Text(item['class'] ?? '')),
                     DataCell(Text(item['totalBorrows'].toString() ?? '0')),
-                    DataCell(Text(item['currentlyBorrowing'].toString() ?? '0')),
+                    DataCell(
+                        Text(item['currentlyBorrowing'].toString() ?? '0')),
                     DataCell(Text(item['timesLate'].toString() ?? '0')),
-                    DataCell(Row( // Action buttons
+                    DataCell(Row(
+                      // Action buttons
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),

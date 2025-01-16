@@ -8,7 +8,7 @@ import 'package:roc_vooraadbeheersysteem/helpers/database_helper.dart';
 class ItemPage extends StatefulWidget {
   final int itemId;
 
-  const ItemPage({Key? key, required this.itemId}) : super(key: key);
+  const ItemPage({super.key, required this.itemId});
 
   @override
   _ItemPageState createState() => _ItemPageState();
@@ -55,7 +55,7 @@ class _ItemPageState extends State<ItemPage> {
     return AppBar(
         title: const Text(
       'Item Page',
-      style: TextStyle(color: const Color(0xff3f2e56)),
+      style: TextStyle(color: Color(0xff3f2e56)),
     ));
   }
 
@@ -83,7 +83,7 @@ class _ItemPageState extends State<ItemPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 50.0),
                   child: Container(
-                    constraints: BoxConstraints(
+                    constraints: const BoxConstraints(
                       maxWidth: 800,
                     ),
                     padding: const EdgeInsets.all(16.0),
@@ -163,13 +163,15 @@ class _ItemPageState extends State<ItemPage> {
                         Row(
                           children: [
                             const Text(
-                              'Beschikbaar:',
+                              'Beschikbaarheid:',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              item.availablity ? 'Yes' : 'No',
+                              item.availablity
+                                  ? 'Beschikbaar'
+                                  : 'Niet beschikbaar',
                               style: const TextStyle(fontSize: 18),
                             ),
                           ],
@@ -253,10 +255,10 @@ class _ItemPageState extends State<ItemPage> {
           );
         },
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(
+      floatingActionButton: const Padding(
+        padding: EdgeInsets.only(
             top: 56.0), // Adjust the bottom padding to your needs
-        child: const FloatingNavBar(),
+        child: FloatingNavBar(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
@@ -270,93 +272,169 @@ class _ItemPageState extends State<ItemPage> {
     bool availability = item.availablity;
     int categoryId = item.categorieID;
 
+    Widget buildRow(String title, Widget child, {bool isCompact = false}) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 130, // Fixed width for consistent title alignment
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const SizedBox(width: 15), // Spacing between title and content
+            isCompact
+                ? child // Compact layout
+                : Expanded(child: child), // Expanded layout
+          ],
+        ),
+      );
+    }
+
     return await showDialog<Item>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Edit Item'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Name field
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                // Notes field
-                TextField(
-                  controller: notesController,
-                  decoration: const InputDecoration(labelText: 'Notes'),
-                ),
-                // Availability switch
-                SwitchListTile(
-                  title: const Text('Available'),
-                  value: availability,
-                  onChanged: (bool value) {
-                    availability = value;
-                  },
-                ),
-                // Category dropdown
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future:
-                      fetchCategories(), // Fetch categories from the database
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.hasError || !snapshot.hasData) {
-                      return const Text('Error loading categories');
-                    }
-
-                    final categories = snapshot.data!;
-                    return DropdownButton<int>(
-                      value: categoryId,
-                      onChanged: (int? newValue) {
-                        if (newValue != null) {
-                          categoryId = newValue;
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Edit Item'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    buildRow(
+                      'Name:',
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    buildRow(
+                      'Notes:',
+                      TextField(
+                        controller: notesController,
+                        maxLines: 3, // Allow up to 3 lines
+                        minLines: 1, // Minimum 1 line
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    buildRow(
+                      'Beschikbaarheid:',
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        child: DropdownButton<bool>(
+                          value: availability,
+                          onChanged: (bool? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                availability = newValue; // Update availability
+                              });
+                            }
+                          },
+                          items: const [
+                            DropdownMenuItem<bool>(
+                              value: true,
+                              child: Text('Beschikbaar'),
+                            ),
+                            DropdownMenuItem<bool>(
+                              value: false,
+                              child: Text('Niet Beschikbaar'),
+                            ),
+                          ],
+                          underline:
+                              const SizedBox(), // Remove default underline
+                          isDense: true, // Compact the dropdown
+                        ),
+                      ),
+                      isCompact: true,
+                    ),
+                    FutureBuilder<List<Map<String, dynamic>>>(
+                      future: fetchCategories(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError || !snapshot.hasData) {
+                          return const Text('Error loading categories');
                         }
-                      },
-                      items: categories.map((category) {
-                        return DropdownMenuItem<int>(
-                          value: category['id'] as int,
-                          child: Text(category['name'] as String),
+
+                        final categories = snapshot.data!;
+                        return buildRow(
+                          'Categorie:',
+                          Container(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            child: DropdownButton<int>(
+                              value: categoryId,
+                              onChanged: (int? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    categoryId = newValue; // Update category ID
+                                  });
+                                }
+                              },
+                              items: categories.map((category) {
+                                return DropdownMenuItem<int>(
+                                  value: category['id'] as int,
+                                  child: Text(category['name'] as String),
+                                );
+                              }).toList(),
+                              underline:
+                                  const SizedBox(), // Remove default underline
+                              isDense: true, // Compact the dropdown
+                            ),
+                          ),
+                          isCompact: true,
                         );
-                      }).toList(),
-                    );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(null);
                   },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final editedItem = Item(
+                      id: item.id,
+                      statusID: item.statusID,
+                      categorieID: categoryId, // Updated category ID
+                      name: nameController.text, // Updated name
+                      availablity: availability, // Updated availability
+                      notes: notesController.text, // Updated notes
+                      image: item.image, // Keep the same image
+                    );
+
+                    Navigator.of(context).pop(editedItem);
+                  },
+                  child: const Text('Save'),
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(null);
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final editedItem = Item(
-                  id: item.id,
-                  statusID: item.statusID,
-                  categorieID: categoryId, // Updated category ID
-                  name: nameController.text, // Updated name
-                  availablity: availability, // Updated availability
-                  notes: notesController.text, // Updated notes
-                  image: item.image, // Keep the same image
-                );
-
-                // Update the database and refresh the UI
-                await editedItem.save();
-                refreshItem();
-
-                // Close the dialog with the edited item
-                Navigator.of(context).pop(editedItem);
-              },
-              child: const Text('Save'),
-            ),
-          ],
+            );
+          },
         );
       },
     );

@@ -9,7 +9,7 @@ import 'package:roc_vooraadbeheersysteem/models/item_model.dart';
 import 'package:roc_vooraadbeheersysteem/models/Status_model.dart';
 
 class TablesPage extends BasePage {
-  const TablesPage({Key? key}) : super(key: key);
+  const TablesPage({super.key});
 
   @override
   AppBar buildAppBar() {
@@ -84,7 +84,7 @@ class _ItemsTableState extends State<ItemsTable> {
     String searchText = _searchController.text.toLowerCase();
     setState(() {
       _filteredItems = _items.where((item) {
-        return item.name?.toLowerCase().contains(searchText) ?? false;
+        return item.name.toLowerCase().contains(searchText) ?? false;
       }).toList();
     });
   }
@@ -124,8 +124,8 @@ class _ItemsTableState extends State<ItemsTable> {
                   cells: <DataCell>[
                     DataCell(Text(item.id.toString())),
                     DataCell(Text(item.name ?? '')),
-                    DataCell(Text(item.statusID?.toString() ?? 'N/A')),
-                    DataCell(Text(item.categorieID?.toString() ?? 'N/A')),
+                    DataCell(Text(item.statusID.toString() ?? 'N/A')),
+                    DataCell(Text(item.categorieID.toString() ?? 'N/A')),
                     DataCell(
                         Text(item.availablity ? 'Available' : 'Unavailable')),
                     DataCell(Text(item.notes ?? '')),
@@ -254,7 +254,7 @@ class _CreateDialogState extends State<CreateDialog> {
 }
 
 class CategoriesTable extends StatefulWidget {
-  const CategoriesTable({Key? key}) : super(key: key);
+  const CategoriesTable({super.key});
 
   @override
   _CategoriesTableState createState() => _CategoriesTableState();
@@ -347,7 +347,7 @@ class _CategoriesTableState extends State<CategoriesTable> {
 }
 
 class StatusTable extends StatefulWidget {
-  const StatusTable({Key? key}) : super(key: key);
+  const StatusTable({super.key});
 
   @override
   _StatusTableState createState() => _StatusTableState();

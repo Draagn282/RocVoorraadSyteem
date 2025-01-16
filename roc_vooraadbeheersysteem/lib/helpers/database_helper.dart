@@ -108,11 +108,11 @@ CREATE TABLE item (
     // required List<dynamic> whereArgs,
     List<String>? columns,
   }) async {
-    print("vind" + tableName + "whereclause" + whereClause);
+    print("vind${tableName}whereclause$whereClause");
     final db = await database;
     print(db.query);
     // Execute the query with dynamic parameters
-    final result = await db.query(tableName + " WHERE " + whereClause + ";");
+    final result = await db.query("$tableName WHERE $whereClause;");
     print(result);
     if (result.isEmpty) {
       return null;

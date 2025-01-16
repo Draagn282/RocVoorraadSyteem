@@ -56,7 +56,7 @@ class Item {
 
       final data = await DatabaseHelper.instance.getData(
         tableName: 'item',
-        whereClause: 'id = ' + id.toString(), // Use placeholder for safety
+        whereClause: 'id = $id', // Use placeholder for safety
         // whereArgs: [id], // Bind the id parameter
       );
 
@@ -71,13 +71,13 @@ class Item {
   }
 
   static Future<void> create(
-    _nameController,
-    _notesController,
-    _imgController,
+    nameController,
+    notesController,
+    imgController,
   ) async {
     final newItem = Item(
-      name: _nameController.text, // Access `.text` from TextEditingController
-      notes: _notesController.text,
+      name: nameController.text, // Access `.text` from TextEditingController
+      notes: notesController.text,
       statusID: 1,
       categorieID: 1,
       availablity: true,
