@@ -173,22 +173,23 @@ class _CreateDialogState extends State<CreateDialog> {
   final _groupController = TextEditingController();
   final _categorieController = TextEditingController();
   final _availabilityController = TextEditingController();
+  final _rentedController = TextEditingController();
 
   final _imgController = TextEditingController();
 
-  Item createItemFromControllers() {
-    return Item(
-      id: 0, // Assuming this is an auto-incrementing field
-      statusID: int.tryParse(_statusController.text) ??
-          0, // Parse to int or default to 0
-      categorieID: 0, // You might need to get this from another source
-      name: _nameController.text,
-      availablity: _availabilityController.text.toLowerCase() ==
-          'true', // Convert to bool (case-insensitive)
-      notes: _notesController.text,
-      image: Uint8List(0),
-    );
-  }
+Item createItemFromControllers() {
+  return Item(
+    id: 0, // Assuming this is an auto-incrementing field
+    statusID: int.tryParse(_statusController.text) ?? 0, // Parse to int or default to 0
+    categorieID: int.tryParse(_categorieController.text) ?? 0, // Parse to int or default to 0
+    name: _nameController.text,
+    availablity: _availabilityController.text.toLowerCase() == 'true', // Convert to bool (case-insensitive)
+    rented: DateTime.tryParse(_rentedController.text) ?? DateTime.now(), // Parse from controller or default to now
+    notes: _notesController.text,
+    image: Uint8List(0),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {

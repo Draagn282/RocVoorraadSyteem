@@ -58,6 +58,7 @@ CREATE TABLE item (
   categorieID INT,
   name TEXT,
   availablity BOOL,
+  rented DateTime,
   notes TEXT,
   image TEXT,
   FOREIGN KEY (statusID) REFERENCES status (id),
@@ -128,13 +129,6 @@ Future<List<Map<String, dynamic>>?> getData({
 
 
   
-Future<List<Map<String, dynamic>>> getAllItems() async {
-  final db = await database;
-  final result = await db.query('item');
-  return result; // Return the full list of results
-}
-
-
   Future<List<Map<String, dynamic>>> getAllItems() async {
     final db = await database;
     final result = await db.query('item');

@@ -37,8 +37,8 @@ class Item {
       rented: map['rented'] != null
         ? DateTime.parse(map['rented'] as String) // Parse if not null
         : DateTime.now(), // Provide a default value if null
-      notes: map['notes'] as String? ?? '', // Use empty string if null
-      image: map['image'] as String? ?? '', // Use empty string if null
+      notes: map['notes'] as String? ?? ''  , // Use empty string if null
+      image: Uint8List(0),
 
     );
   }
@@ -63,7 +63,6 @@ class Item {
 
       final data = await DatabaseHelper.instance.getData(
         tableName: 'item',
-
         whereClause: 'id = $id', // Use placeholder for safety
         whereArgs: [id], // Bind the id parameter
 
@@ -85,11 +84,12 @@ class Item {
     imgController,
   ) async {
     final newItem = Item(
-      name: nameController.text, // Access `.text` from TextEditingController
+      name: nameController.text,
       notes: notesController.text,
       statusID: 1,
       categorieID: 1,
       availablity: true,
+      rented: DateTime.now(),
       image: Uint8List(0),
     );
     // Insert the item into the database
@@ -112,6 +112,7 @@ class Item {
       statusID: statusID, // Use the updated status ID
       categorieID: categorieID, // Use the updated category ID
       availablity: availablity, // Use the updated availability
+      rented: rented,
       image: image, // Keep the current image unless updated elsewhere
     );
 
