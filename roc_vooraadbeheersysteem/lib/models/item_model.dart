@@ -97,32 +97,59 @@ class Item {
     log('Inserted item with id: $id');
   }
 
-  Future<void> save() async {
-    // Ensure this item has an id (required for updating)
-    if (id == null) {
-      log('Error: Cannot save an item without an ID.');
-      return;
+ Future<void> save() async {
+  // Ensure this item has an id (required for updating)
+  if (id == null) {
+    log('Error: Cannot save an item without an ID.');
+    return;
+  }
+
+  // Create the updated item instance
+  final updatedItem = Item(
+    id: id, // Ensure the ID is set for updating
+    name: name, // Use the updated name
+    notes: notes, // Use the updated notes
+    statusID: statusID, // Use the updated status ID
+    categorieID: categorieID, // Use the updated category ID
+    availablity: availablity, // Use the updated availability
+    rented: rented, // Store the rented time
+    image: image, // Keep the current image unless updated elsewhere
+  );
+
+  // Update the item in the database
+  final rowsAffected = await DatabaseHelper.instance.createItem(updatedItem);
+
+  log('Updated item with id: $id. Rows affected: $rowsAffected');
+}
+
+Future<void> delete() async {
+  try {
+    if (id != null) {
+      // Create an Item instance and pass it to deleteItem method
+      final item = Item(
+        id: id,
+        statusID: statusID,
+        categorieID: categorieID,
+        name: name,
+        availablity: availablity,
+        rented: rented,
+        notes: notes,
+        image: image,
+      );
+
+      // Use the database helper to delete the item
+      final rowsAffected = await DatabaseHelper.instance.deleteItem(item);
+      if (rowsAffected > 0) {
+        log('Item with id $id successfully deleted.');
+      } else {
+        log('No item found with id $id.');
+      }
+    } else {
+      log('Error: Item ID is null, cannot delete item.');
     }
-
-    // Create the updated item instance
-    final updatedItem = Item(
-      id: id, // Ensure the ID is set for updating
-      name: name, // Use the updated name
-      notes: notes, // Use the updated notes
-      statusID: statusID, // Use the updated status ID
-      categorieID: categorieID, // Use the updated category ID
-      availablity: availablity, // Use the updated availability
-      rented: rented,
-      image: image, // Keep the current image unless updated elsewhere
-    );
-
-    // Update the item in the database
-    final rowsAffected = await DatabaseHelper.instance.createItem(updatedItem);
-
-    log('Updated item with id: $id. Rows affected: $rowsAffected');
+  } catch (e) {
+    log('Error deleting item with id $id', error: e);
   }
+}
 
-  Future<void> delete() async {
-    // Add delete logic here (e.g., delete the item from the database)
-  }
 }

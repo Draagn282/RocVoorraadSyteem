@@ -25,24 +25,22 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
   }
 
   void _navigateTo(String routeName) {
-  // Close the navbar before navigating
-  _toggleNavBar();
+    // Close the navbar before navigating
+    _toggleNavBar();
 
-  // Add a delay to allow the navbar to close before navigating
-  Future.delayed(const Duration(milliseconds: 300), () {
-    switch (routeName) {
-      case '/item':
-        Navigator.pushReplacementNamed(
-          context,
-          routeName,
-          arguments: 1, // Pass the itemId here
-        );
-        break;
-      default:
-        Navigator.pushReplacementNamed(context, routeName);
-    }
-  });
-}
+    // Add a delay to allow the navbar to close before navigating
+    Future.delayed(const Duration(milliseconds: 300), () {
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) =>
+              _getPageByRouteName(routeName),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
+      );
+    });
+  }
 
   Widget _getPageByRouteName(String routeName) {
     switch (routeName) {
@@ -52,8 +50,8 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
         return const TestPage();
       case '/archive':
         return const ArchivePage();
-      case '/item':
-        return const ItemPage(itemId: 1);
+      // case '/item':
+      //   return const ItemPage(itemId: 1);
       case '/student':
         return const StudentPage();
       case '/tables':
@@ -138,16 +136,16 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
                 //     _navigateTo('/archive');
                 //   },
                 // ),
-                ListTile(
-                  leading: const Icon(Icons.list, color: Color(0xff3f2e56)),
-                  title: const Text(
-                    'Item',
-                    style: TextStyle(color: Color(0xff3f2e56)),
-                  ),
-                  onTap: () {
-                    _navigateTo('/item');
-                  },
-                ),
+                // ListTile(
+                //   leading: const Icon(Icons.list, color: Color(0xff3f2e56)),
+                //   title: const Text(
+                //     'Item',
+                //     style: TextStyle(color: Color(0xff3f2e56)),
+                //   ),
+                //   onTap: () {
+                //     _navigateTo('/item');
+                //   },
+                // ),
                 ListTile(
                   leading: const Icon(Icons.person, color: Color(0xff3f2e56)),
                   title: const Text(

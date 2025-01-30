@@ -15,18 +15,7 @@ class ItemPage extends StatefulWidget {
 }
 
 class _ItemPageState extends State<ItemPage> {
-  late int itemId;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Retrieve the itemId from route arguments
-    itemId = ModalRoute.of(context)?.settings.arguments as int;
-    itemFuture = Item.getItem(itemId);
-  }
-
   late Future<Item?> itemFuture;
-
 
   @override
   void initState() {
@@ -423,8 +412,6 @@ Future<Item?> _showEditDialog(BuildContext context, Item item) async {
     },
   ),
 ),
-
-
                 FutureBuilder<List<Map<String, dynamic>>>(
                   future: fetchCategories(),
                   builder: (context, snapshot) {
@@ -491,7 +478,7 @@ Future<Item?> _showEditDialog(BuildContext context, Item item) async {
 
                 Navigator.of(context).pop(editedItem);
               },
-              child: const Text('Save'),
+              child: const Text('Opslaan'),
             ),
           ],
         );

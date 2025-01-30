@@ -18,7 +18,7 @@ class HomePage extends BasePage {
   @override
   Widget buildBody(BuildContext context) {
     return const Center(
-      child: Text('Home Pagina word aan gewerkt'),
+      child: Text('Home Pagina wordt aan gewerkt'),
     );
   }
 }

@@ -166,24 +166,37 @@ class _ItemsTableState extends State<ItemsTable> {
                     )),
                     DataCell(Row(
                       children: [
-                            IconButton(
-                              icon: const Icon(Icons.search),
-                              onPressed: () {
-                                final itemId = item.id; // Get the itemId from your model
-                                Navigator.pushNamed(
-                                  context,
-                                  '/item',
-                                  arguments: itemId, // Pass the itemId as an argument
-                                );
-                              },
-                            ),
-
                         IconButton(
-                          icon: const Icon(Icons.delete),
+                          icon: const Icon(Icons.search),
                           onPressed: () {
-                            // Handle delete action
+                            final itemId = item.id; // Get the itemId from your model
+                            Navigator.pushNamed(
+                              context,
+                              '/item',
+                              arguments: itemId, // Pass the itemId as an argument
+                            );
                           },
                         ),
+                       IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            final itemId = item.id; // Get the item ID
+                            if (itemId != null) {
+                              // Create an Item instance (if not already created)
+                              final item = await Item.getItem(itemId);
+
+                              if (item != null) {
+                                // Call the delete method on the item instance
+                                await item.delete();
+                                // Optionally, show a snackbar or navigate away after deletion
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Item deleted successfully')),
+                                );
+                                // You can refresh the page or navigate to another page if needed
+                              }
+                            }
+                          },
+                        )
                       ],
                     )),
                   ],
@@ -208,21 +221,53 @@ class _CreateDialogState extends State<CreateDialog> {
   final _nameController = TextEditingController();
   final _notesController = TextEditingController();
   final _statusController = TextEditingController();
-  final _groupController = TextEditingController();
   final _categorieController = TextEditingController();
   final _availabilityController = TextEditingController();
   final _rentedController = TextEditingController();
   final _imgController = TextEditingController();
 
+  int? _selectedStatus;
+  int? _selectedCategory;
+  List<Map<String, dynamic>> _categories = [];
+  List<Map<String, dynamic>> _statuses = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+    _loadStatuses();
+  }
+
+  // Load categories from the database
+  Future<void> _loadCategories() async {
+    final categories = await DatabaseHelper.instance.getAllCategories();
+    setState(() {
+      _categories = categories;
+      if (_categories.isNotEmpty) {
+        _selectedCategory = _categories.first['id']; // Set default to first category
+      }
+    });
+  }
+
+  // Load statuses from the database
+  Future<void> _loadStatuses() async {
+    final statuses = await DatabaseHelper.instance.getAllStatuses();
+    setState(() {
+      _statuses = statuses;
+      if (_statuses.isNotEmpty) {
+        _selectedStatus = _statuses.first['id']; // Set default to first status
+      }
+    });
+  }
+
   // Create item from controllers
   Item createItemFromControllers() {
     return Item(
-      id: 0, // Assuming this is an auto-incrementing field
-      statusID: int.tryParse(_statusController.text) ?? 1, // Default to 1 if parsing fails
-      categorieID: int.tryParse(_categorieController.text) ?? 1, // Default to 1 if parsing fails
+      statusID: _selectedStatus ?? 1, // Default to 1 if null
+      categorieID: _selectedCategory ?? 1, // Default to 1 if null
       name: _nameController.text,
-      availablity: _availabilityController.text.toLowerCase() == 'true', // Convert to bool (case-insensitive)
-      rented: DateTime.tryParse(_rentedController.text) ?? DateTime.now(), // Default to now if parsing fails
+      availablity: false,
+      rented: DateTime.tryParse(_rentedController.text) ?? DateTime.now(),
       notes: _notesController.text,
       image: Uint8List(0),
     );
@@ -246,21 +291,62 @@ class _CreateDialogState extends State<CreateDialog> {
                 controller: _notesController,
                 decoration: const InputDecoration(labelText: 'Notes'),
               ),
-              TextField(
-                controller: _statusController,
-                decoration: const InputDecoration(labelText: 'Status'),
-              ),
-              TextField(
-                controller: _categorieController,
-                decoration: const InputDecoration(labelText: 'Categorie'),
-              ),
-              TextField(
+              // Status selector as a dropdown
+              if (_statuses.isNotEmpty) 
+                DropdownButtonFormField<int>(
+                  value: _selectedStatus,
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedStatus = newValue;
+                    });
+                  },
+                  decoration: const InputDecoration(labelText: 'Status'),
+                  items: _statuses.map<DropdownMenuItem<int>>((Map<String, dynamic> status) {
+                    return DropdownMenuItem<int>(
+                      value: status['id'],
+                      child: Text(status['name']),
+                    );
+                  }).toList(),
+                ),
+              // Category selector as a dropdown
+              if (_categories.isNotEmpty) 
+                DropdownButtonFormField<int>(
+                  value: _selectedCategory,
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedCategory = newValue;
+                    });
+                  },
+                  decoration: const InputDecoration(labelText: 'Categorie'),
+                  items: _categories.map<DropdownMenuItem<int>>((Map<String, dynamic> category) {
+                    return DropdownMenuItem<int>(
+                      value: category['id'],
+                      child: Text(category['name']),
+                    );
+                  }).toList(),
+                ),
+              // Availability is always set to 0
+              TextFormField(
                 controller: _availabilityController,
                 decoration: const InputDecoration(labelText: 'Availability'),
+                enabled: false,
               ),
+              // Rented date selector
               TextField(
                 controller: _rentedController,
                 decoration: const InputDecoration(labelText: 'Rented (DateTime)'),
+                onTap: () async {
+                  FocusScope.of(context).requestFocus(FocusNode()); // To hide the keyboard
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2101),
+                  );
+                  if (pickedDate != null) {
+                    _rentedController.text = pickedDate.toLocal().toString().split(' ')[0]; // Set the selected date
+                  }
+                },
               ),
               TextField(
                 controller: _imgController,
@@ -277,7 +363,7 @@ class _CreateDialogState extends State<CreateDialog> {
               onPressed: () async {
                 final newItem = createItemFromControllers();
                 await DatabaseHelper.instance.createItem(newItem);
-                Navigator.pop(context, 'Create');
+                Navigator.pop(context, 'Maken');
               },
               child: const Text('Create'),
             ),
@@ -288,6 +374,7 @@ class _CreateDialogState extends State<CreateDialog> {
     );
   }
 }
+
 
 
 class CategoriesTable extends StatefulWidget {

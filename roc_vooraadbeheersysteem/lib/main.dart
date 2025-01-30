@@ -6,6 +6,8 @@ import '/helpers/database_helper.dart' as helpers;
 import 'package:provider/provider.dart';
 import 'package:roc_vooraadbeheersysteem/pages/home_page.dart';
 import 'package:roc_vooraadbeheersysteem/pages/test_page.dart';
+import 'package:roc_vooraadbeheersysteem/pages/item_page.dart';
+import 'package:roc_vooraadbeheersysteem/pages/tables_page.dart';
 
 void main() async {
   if (Platform.isWindows) {
@@ -32,6 +34,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const HomePage(),
+      routes: {
+        '/item': (context) => ItemPage(itemId: ModalRoute.of(context)!.settings.arguments as int),
+        '/tables': (context) => TablesPage(),
+      },
     );
   }
 }

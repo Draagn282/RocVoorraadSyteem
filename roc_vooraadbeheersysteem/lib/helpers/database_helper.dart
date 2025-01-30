@@ -158,6 +158,23 @@ Future<int> createItem(Item item) async {
   return result; // Returns the inserted ID
 }
 
+Future<int> deleteItem(Item item) async {
+  final db = await database; // Get the database instance
+
+  // Check if the item has a valid ID
+  if (item.id == null) {
+    throw Exception('Item ID is null, cannot delete.');
+  }
+
+  // Perform the delete operation in the database
+  return await db.delete(
+    'item', // Table name
+    where: 'id = ?', // The WHERE clause to find the item by ID
+    whereArgs: [item.id], // The arguments for the WHERE clause (item ID)
+  );
+}
+
+
 
 Future<List<Map<String, dynamic>>> getAllStudents() async {
   final db = await database;
@@ -212,10 +229,6 @@ Future<String?> getItemNameById(int itemID) async {
   );
   return result.isNotEmpty ? result.first['name'] as String : null;
 }
-
-
-
-
 
 Future<void> insertOrUpdate({
   required String tableName,
