@@ -166,16 +166,18 @@ class _ItemsTableState extends State<ItemsTable> {
                     )),
                     DataCell(Row(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.search),
-                          onPressed: () {
-                              final itemId = item.id;
-                              Navigator.pushNamed(
-                                context,
-                                '/item',
-                                arguments: itemId,
-                              );                          },
-                        ),
+                            IconButton(
+                              icon: const Icon(Icons.search),
+                              onPressed: () {
+                                final itemId = item.id; // Get the itemId from your model
+                                Navigator.pushNamed(
+                                  context,
+                                  '/item',
+                                  arguments: itemId, // Pass the itemId as an argument
+                                );
+                              },
+                            ),
+
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
@@ -195,7 +197,6 @@ class _ItemsTableState extends State<ItemsTable> {
     );
   }
 }
-
 class CreateDialog extends StatefulWidget {
   const CreateDialog({super.key});
 
@@ -211,22 +212,21 @@ class _CreateDialogState extends State<CreateDialog> {
   final _categorieController = TextEditingController();
   final _availabilityController = TextEditingController();
   final _rentedController = TextEditingController();
-
   final _imgController = TextEditingController();
 
-Item createItemFromControllers() {
-  return Item(
-    id: 0, // Assuming this is an auto-incrementing field
-    statusID: int.tryParse(_statusController.text) ?? 0, // Parse to int or default to 0
-    categorieID: int.tryParse(_categorieController.text) ?? 0, // Parse to int or default to 0
-    name: _nameController.text,
-    availablity: _availabilityController.text.toLowerCase() == 'true', // Convert to bool (case-insensitive)
-    rented: DateTime.tryParse(_rentedController.text) ?? DateTime.now(), // Parse from controller or default to now
-    notes: _notesController.text,
-    image: Uint8List(0),
-  );
-}
-
+  // Create item from controllers
+  Item createItemFromControllers() {
+    return Item(
+      id: 0, // Assuming this is an auto-incrementing field
+      statusID: int.tryParse(_statusController.text) ?? 1, // Default to 1 if parsing fails
+      categorieID: int.tryParse(_categorieController.text) ?? 1, // Default to 1 if parsing fails
+      name: _nameController.text,
+      availablity: _availabilityController.text.toLowerCase() == 'true', // Convert to bool (case-insensitive)
+      rented: DateTime.tryParse(_rentedController.text) ?? DateTime.now(), // Default to now if parsing fails
+      notes: _notesController.text,
+      image: Uint8List(0),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +234,7 @@ Item createItemFromControllers() {
       onPressed: () => showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title: const Text('Create new item'),
+          title: const Text('Nieuw item maken'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -248,39 +248,35 @@ Item createItemFromControllers() {
               ),
               TextField(
                 controller: _statusController,
-                decoration: const InputDecoration(labelText: 'status'),
-              ),
-              TextField(
-                controller: _groupController,
-                decoration: const InputDecoration(labelText: 'group'),
+                decoration: const InputDecoration(labelText: 'Status'),
               ),
               TextField(
                 controller: _categorieController,
-                decoration: const InputDecoration(labelText: 'categorie'),
+                decoration: const InputDecoration(labelText: 'Categorie'),
               ),
               TextField(
                 controller: _availabilityController,
-                decoration: const InputDecoration(labelText: 'availability'),
+                decoration: const InputDecoration(labelText: 'Availability'),
+              ),
+              TextField(
+                controller: _rentedController,
+                decoration: const InputDecoration(labelText: 'Rented (DateTime)'),
               ),
               TextField(
                 controller: _imgController,
-                decoration: const InputDecoration(labelText: 'img'),
+                decoration: const InputDecoration(labelText: 'Image'),
               ),
             ],
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => {Navigator.pop(context, 'Cancel')},
+              onPressed: () => Navigator.pop(context, 'Cancel'),
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
-                Item.create(
-                  _nameController,
-                  _notesController,
-                  _imgController,
-                );
-                // Close the dialog
+                final newItem = createItemFromControllers();
+                await DatabaseHelper.instance.createItem(newItem);
                 Navigator.pop(context, 'Create');
               },
               child: const Text('Create'),
@@ -292,6 +288,7 @@ Item createItemFromControllers() {
     );
   }
 }
+
 
 class CategoriesTable extends StatefulWidget {
   const CategoriesTable({super.key});

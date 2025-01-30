@@ -147,16 +147,17 @@ Future<List<Map<String, dynamic>>?> getData({
     return result; // Return the full list of results
   }
 
-  Future<int> createItem(Item item) async {
-    final db = await database;
 
-    // Use the toMap function of the Item class
-    return await db.insert(
-      'item',
-      item.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
+Future<int> createItem(Item item) async {
+  final db = await database;
+  final result = await db.insert(
+    'item', // Table name
+    item.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace, // Handle conflicts (e.g., if ID already exists)
+  );
+  return result; // Returns the inserted ID
+}
+
 
 Future<List<Map<String, dynamic>>> getAllStudents() async {
   final db = await database;
@@ -211,6 +212,9 @@ Future<String?> getItemNameById(int itemID) async {
   );
   return result.isNotEmpty ? result.first['name'] as String : null;
 }
+
+
+
 
 
 Future<void> insertOrUpdate({

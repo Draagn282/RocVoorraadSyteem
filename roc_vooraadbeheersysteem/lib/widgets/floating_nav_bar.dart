@@ -25,22 +25,24 @@ class _FloatingNavBarState extends State<FloatingNavBar> {
   }
 
   void _navigateTo(String routeName) {
-    // Close the navbar before navigating
-    _toggleNavBar();
+  // Close the navbar before navigating
+  _toggleNavBar();
 
-    // Add a delay to allow the navbar to close before navigating
-    Future.delayed(const Duration(milliseconds: 300), () {
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) =>
-              _getPageByRouteName(routeName),
-          transitionDuration: Duration.zero,
-          reverseTransitionDuration: Duration.zero,
-        ),
-      );
-    });
-  }
+  // Add a delay to allow the navbar to close before navigating
+  Future.delayed(const Duration(milliseconds: 300), () {
+    switch (routeName) {
+      case '/item':
+        Navigator.pushReplacementNamed(
+          context,
+          routeName,
+          arguments: 1, // Pass the itemId here
+        );
+        break;
+      default:
+        Navigator.pushReplacementNamed(context, routeName);
+    }
+  });
+}
 
   Widget _getPageByRouteName(String routeName) {
     switch (routeName) {

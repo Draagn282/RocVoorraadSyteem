@@ -51,32 +51,32 @@ class Item {
       'categorieID': categorieID,
       'name': name,
       'availablity': availablity ? 1 : 0, // Convert bool to int for storage
-      'rented': rented,
+    'rented': rented.toIso8601String(), // Convert DateTime to string
       'notes': notes,
       'image': image, // Store binary data in the database
     };
   }
 
   static Future<Item?> getItem(int id) async {
-    try {
-      log('Fetching item with id: $id');
+  try {
+    log('Fetching item with id: $id');
 
-      final data = await DatabaseHelper.instance.getData(
-        tableName: 'item',
-        whereClause: 'id = $id', // Use placeholder for safety
-        whereArgs: [id], // Bind the id parameter
+    final data = await DatabaseHelper.instance.getData(
+      tableName: 'item',
+      whereClause: 'id = ?', // Gebruik de placeholder '?'
+      whereArgs: [id], // Bind de id parameter
+    );
 
-      );
-
-      if (data != null && data.isNotEmpty) {
-        return Item.fromMap(data.first);
-      }
-    } catch (e) {
-      log('Error fetching item with id: $id', error: e);
+    if (data != null && data.isNotEmpty) {
+      return Item.fromMap(data.first);
     }
-
-    return null;
+  } catch (e) {
+    log('Error fetching item with id: $id', error: e);
   }
+
+  return null;
+}
+
 
   static Future<void> create(
     nameController,
