@@ -30,13 +30,11 @@ class _ItemPageState extends State<ItemPage> {
     });
   }
 
-
   Future<List<Map<String, dynamic>>> fetchCategories() async {
     final db = await DatabaseHelper.instance.database;
     return await db
         .query('categorie'); // Replace 'categorie' with your table name
   }
-
 
   Future<String> fetchCategory(int categoryId) async {
     final db = await DatabaseHelper.instance.database;
@@ -92,7 +90,6 @@ class _ItemPageState extends State<ItemPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         //
                         //
                         Center(
@@ -264,210 +261,218 @@ class _ItemPageState extends State<ItemPage> {
     );
   }
 
-Future<Item?> _showEditDialog(BuildContext context, Item item) async {
-  final TextEditingController nameController =
-      TextEditingController(text: item.name);
-  final TextEditingController notesController =
-      TextEditingController(text: item.notes);
-  bool availability = item.availablity;
-  DateTime rented = item.rented;
-  int categoryId = item.categorieID;
+  Future<Item?> _showEditDialog(BuildContext context, Item item) async {
+    final TextEditingController nameController =
+        TextEditingController(text: item.name);
+    final TextEditingController notesController =
+        TextEditingController(text: item.notes);
+    bool availability = item.availablity;
+    DateTime rented = item.rented;
+    int categoryId = item.categorieID;
 
-  Widget buildRow(String title, Widget child, {bool isCompact = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 130, // Fixed width for consistent title alignment
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+    Widget buildRow(String title, Widget child, {bool isCompact = false}) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 130, // Fixed width for consistent title alignment
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 15), // Spacing between title and content
-          isCompact
-              ? child // Compact layout
-              : Expanded(child: child), // Expanded layout
-        ],
-      ),
+            const SizedBox(width: 15), // Spacing between title and content
+            isCompact
+                ? child // Compact layout
+                : Expanded(child: child), // Expanded layout
+          ],
+        ),
+      );
+    }
+
+    return await showDialog<Item>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Edit Item'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    buildRow(
+                      'Name:',
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    buildRow(
+                      'Notes:',
+                      TextField(
+                        controller: notesController,
+                        maxLines: 3, // Allow up to 3 lines
+                        minLines: 1, // Minimum 1 line
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    buildRow(
+                      'Beschikbaarheid:',
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        child: DropdownButton<bool>(
+                          value: availability,
+                          onChanged: (bool? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                availability = newValue; // Update availability
+                              });
+                            }
+                          },
+                          items: const [
+                            DropdownMenuItem<bool>(
+                              value: true,
+                              child: Text('Beschikbaar'),
+                            ),
+                            DropdownMenuItem<bool>(
+                              value: false,
+                              child: Text('Niet Beschikbaar'),
+                            ),
+                          ],
+                          underline:
+                              const SizedBox(), // Remove default underline
+                          isDense: true, // Compact the dropdown
+                        ),
+                      ),
+                      isCompact: true,
+                    ),
+                    buildRow(
+                      'Rented:', // Add rented field
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                        child: DropdownButton<DateTime>(
+                          value:
+                              rented, // Assuming `rented` is a DateTime variable
+                          onChanged: (DateTime? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                rented = newValue; // Update rented
+                              });
+                            }
+                          },
+                          items: [
+                            // Add your DateTime options here
+                            DropdownMenuItem<DateTime>(
+                              value: DateTime(2023, 1, 1), // Example date
+                              child: Text('January 1, 2023'),
+                            ),
+                            DropdownMenuItem<DateTime>(
+                              value: DateTime(2023, 2, 1), // Example date
+                              child: Text('February 1, 2023'),
+                            ),
+                            // Add more dates as needed
+                          ],
+                          underline:
+                              const SizedBox(), // Remove default underline
+                          isDense: true, // Compact the dropdown
+                        ),
+                      ),
+                      isCompact: true,
+                    ),
+                    FutureBuilder<List<Map<String, dynamic>>>(
+                      future: fetchCategories(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError || !snapshot.hasData) {
+                          return const Text('Error loading categories');
+                        }
+
+                        final categories = snapshot.data!;
+                        return buildRow(
+                          'Categorie:',
+                          Container(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            child: DropdownButton<int>(
+                              value: categoryId,
+                              onChanged: (int? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    categoryId = newValue; // Update category ID
+                                  });
+                                }
+                              },
+                              items: categories.map((category) {
+                                return DropdownMenuItem<int>(
+                                  value: category['id'] as int,
+                                  child: Text(category['name'] as String),
+                                );
+                              }).toList(),
+                              underline:
+                                  const SizedBox(), // Remove default underline
+                              isDense: true, // Compact the dropdown
+                            ),
+                          ),
+                          isCompact: true,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(null);
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final editedItem = Item(
+                      id: item.id,
+                      statusID: item.statusID,
+                      categorieID: categoryId, // Updated category ID
+                      name: nameController.text, // Updated name
+                      availablity: availability, // Updated availability
+                      rented: rented, // Updated rented
+                      notes: notesController.text, // Updated notes
+                      image: item.image, // Keep the same image
+                    );
+
+                    Navigator.of(context).pop(editedItem);
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
-
-  return await showDialog<Item>(
-    context: context,
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: const Text('Edit Item'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  buildRow(
-                    'Name:',
-                    TextField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  buildRow(
-                    'Notes:',
-                    TextField(
-                      controller: notesController,
-                      maxLines: 3, // Allow up to 3 lines
-                      minLines: 1, // Minimum 1 line
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  buildRow(
-                    'Beschikbaarheid:',
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                      child: DropdownButton<bool>(
-                        value: availability,
-                        onChanged: (bool? newValue) {
-                          if (newValue != null) {
-                            setState(() {
-                              availability = newValue; // Update availability
-                            });
-                          }
-                        },
-                        items: const [
-                          DropdownMenuItem<bool>(
-                            value: true,
-                            child: Text('Beschikbaar'),
-                          ),
-                          DropdownMenuItem<bool>(
-                            value: false,
-                            child: Text('Niet Beschikbaar'),
-                          ),
-                        ],
-                        underline: const SizedBox(), // Remove default underline
-                        isDense: true, // Compact the dropdown
-                      ),
-                    ),
-                    isCompact: true,
-                  ),
-                  // buildRow(
-                    // 'Rented:', // Add rented field
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    //   decoration: BoxDecoration(
-                    //     border: Border.all(color: Colors.grey),
-                    //     borderRadius: BorderRadius.circular(4.0),
-                    //   ),
-                    //   child: DropdownButton<bool>(
-                    //     value: rented,
-                    //     onChanged: (bool? newValue) {
-                    //       if (newValue != null) {
-                    //         setState(() {
-                    //           rented = newValue; // Update rented
-                    //         });
-                    //       }
-                    //     },
-                    //     items: const [
-                    //       DropdownMenuItem<bool>(
-                    //         value: true,
-                    //         child: Text('Yes'),
-                    //       ),
-                    //       DropdownMenuItem<bool>(
-                    //         value: false,
-                    //         child: Text('No'),
-                    //       ),
-                    //     ],
-                    //     underline: const SizedBox(), // Remove default underline
-                    //     isDense: true, // Compact the dropdown
-                    //   ),
-                    // ),
-                    // isCompact: true,
-                  // ),
-                  FutureBuilder<List<Map<String, dynamic>>>(
-                    future: fetchCategories(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError || !snapshot.hasData) {
-                        return const Text('Error loading categories');
-                      }
-
-                      final categories = snapshot.data!;
-                      return buildRow(
-                        'Categorie:',
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: DropdownButton<int>(
-                            value: categoryId,
-                            onChanged: (int? newValue) {
-                              if (newValue != null) {
-                                setState(() {
-                                  categoryId = newValue; // Update category ID
-                                });
-                              }
-                            },
-                            items: categories.map((category) {
-                              return DropdownMenuItem<int>(
-                                value: category['id'] as int,
-                                child: Text(category['name'] as String),
-                              );
-                            }).toList(),
-                            underline: const SizedBox(), // Remove default underline
-                            isDense: true, // Compact the dropdown
-                          ),
-                        ),
-                        isCompact: true,
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(null);
-                },
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  final editedItem = Item(
-                    id: item.id,
-                    statusID: item.statusID,
-                    categorieID: categoryId, // Updated category ID
-                    name: nameController.text, // Updated name
-                    availablity: availability, // Updated availability
-                    rented: rented, // Updated rented
-                    notes: notesController.text, // Updated notes
-                    image: item.image, // Keep the same image
-                  );
-
-                  Navigator.of(context).pop(editedItem);
-                },
-                child: const Text('Save'),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
-}
 }
